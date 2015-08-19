@@ -1,4 +1,4 @@
-# Zadara Storage Dockerfiles
+# ZCS Dockerfiles
 
 ![](https://pbs.twimg.com/media/CIMSwtYWsAQ7PTg.jpg)
 
