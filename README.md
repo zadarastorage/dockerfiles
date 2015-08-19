@@ -89,7 +89,7 @@ docker ps
 docker inspect container_id | grep IP
 ```
 
-The docker ps command will return the 16-digit container id and then use that value to 
+The docker ps command will return the 12-hexadecimal container id and then use that value to 
 inspect the contents of the container. All we need is the IP to ssh into it.
 
 ```
@@ -110,11 +110,11 @@ build machine to it.
 
 I usually create a dockerimages volume and mount this volume as /mnt/dockerimages.
 
-Issue the save command:
+Issue the export command:
 
 ```
 mkdir /mnt/dockerimages/namespace
-docker save container_id > /mnt/dockerimages/namespace/ssh.tar
+docker export container_id > /mnt/dockerimages/namespace/ssh.tar
 ```
 
 To create an ZCS image from the VPSA GUI, you would then select your dockerimages
