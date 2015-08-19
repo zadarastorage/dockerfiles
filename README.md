@@ -1,4 +1,3 @@
-
 # Zadara Storage Dockerfiles
 
 ![](https://pbs.twimg.com/media/CIMSwtYWsAQ7PTg.jpg)
@@ -9,7 +8,7 @@ Container Services (ZCS).
 
 ## Quick Start
 
-Some of the appications are pre-configured and available in the Docker
+Some of the applications are preconfigured and available in the Docker
 public repository. We suggest that you download:
 
 ```
@@ -36,12 +35,12 @@ include the specific build commands and sshd service startup prior
 to running your app.
 
 This will allow you to access your container via ssh. Please remember
-to change the default passwd once you log into the container.
+to change the default password once you log into the container.
 
 ### Public Apps
 
 If you are planning to deploy your containers via the Docker repository,
-you will need a github or bitbucket account and a Docker account. You 
+you will need a git hub or bit bucket account and a Docker account. You 
 then you can use the Docker repository as a reference for installing
 images for ZCS use.
 
@@ -53,8 +52,7 @@ it can work. Please contact us if you need assistance do this.
 
 Creating private apps is the quickest way to test your container. This
 involves building and running a container then saving the container
-file system as a tar file to VPSA volume accessible to your Docker build
-machine.
+file system as a tar file to VPSA volume accessible to your Docker build machine.
 
 If you don't have a docker build machine, create an Ubuntu instance or
 use an existing one and install docker:
@@ -74,7 +72,7 @@ docker build -t namespace/ssh .
 The tag "-t" can be any unique identifier, but the convention is namepace/app.
 When we build this, we would use -t zadara/ssh.
 
-After you build the app, run it interactivly
+After you build the app, run it interactively
 
 ```
 docker run -it -p 9222:22 namespace/ssh
@@ -120,5 +118,5 @@ docker save container_id > /mnt/dockerimages/namespace/ssh.tar
 ```
 
 To create an ZCS image from the VPSA GUI, you would then select your dockerimages
-volume and the namespace/ssh.tar file.  Afterwhich you would run a container
+volume and the namespace/ssh.tar file.  After which you would run a container
 using this image.
