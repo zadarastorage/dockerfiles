@@ -1,7 +1,7 @@
 FROM ubuntu
 MAINTAINER Howard Young <howard@zadarastorage.com>
 
-RUN apt-get update && apt-get install -y openssh-server
+RUN apt-get update && apt-get install -y openssh-server acl
 
 RUN mkdir /var/run/sshd
 RUN echo 'root:zadara' | chpasswd
