@@ -9,7 +9,7 @@ Image specific:
 
 ## Building
 
-The best way to evaluate your VPSA is to build iozone as a private app from a Linux instance connected to your VPSA. Run the container once from Linux to test your network and NFS performance and then on the VPSA virtual controller to see the performance difference.
+The best way to evaluate your VPSA is to build iozone as a [private app](https://github.com/zadarastorage/dockerfiles#private-apps) from a Linux instance connected to your VPSA. Run the container once from Linux to test your network and NFS performance and then on the VPSA virtual controller to see the performance difference.
 
 ## Run example
 
