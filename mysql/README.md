@@ -1,6 +1,7 @@
 # MySQL 
 
-An example configuration of [MySQL](https://www.mysql.com/) running as ZCS.
+An example configuration of [MySQL](https://www.mysql.com/) running as ZCS. This configuration is an Alpha release
+so use it as an example only.
 
 You would map your VPSA volume as /mnt and a mysql directory and database will be 
 created if it does not exist. 
