@@ -23,25 +23,25 @@ Some screeenshots are included below to explain how to create this container wit
 
 If you wish to access this container via SSH, specify that port 22 should be accessible:
 
-![](https://github.com/dockerfiles/tree/master/inotify/screenshots/inotify_zcs_port.png)
+![](https://github.com/dockerfiles/blob/master/inotify/screenshots/inotify_zcs_port.png)
 
 ### Volumes
 
 You need to specify which Zadara NAS Share will be mounted in the container and where.  In this case, we will mount the "inotify-watch-volume" NAS Share to "/inotify-watch-volume" in the container:
 
-![](https://github.com/dockerfiles/tree/master/inotify/screenshots/inotify_zcs_volume.png)
+![](https://github.com/dockerfiles/blob/master/inotify/screenshots/inotify_zcs_volume.png)
 
 ### Arguments
 
 The arguments you specify will be fed to the entry point script, in this case "/start.sh".  The example only needs one argument - the path to the watched directory, in this case "/inotify-watch-volume":
 
-![](https://github.com/dockerfiles/tree/master/inotify/screenshots/inotify_zcs_args.png)
+![](https://github.com/dockerfiles/blob/master/inotify/screenshots/inotify_zcs_args.png)
 
 ### Entry Point
 
 Finally, the ZCS engine needs to know what script to run when the container launches.  Specify to run "/start.sh" as specified in the Dockerfile:
 
-![](https://github.com/dockerfiles/tree/master/inotify/screenshots/inotify_zcs_entry.png)
+![](https://github.com/dockerfiles/blob/master/inotify/screenshots/inotify_zcs_entry.png)
 
 ## Support
 
