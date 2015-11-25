@@ -2,14 +2,15 @@
 # ZCS Build for Zadara Aging Utility
 #
 
-FROM       ubuntu
+FROM       ubuntu:12.04
 
 MAINTAINER Howard Young "https://github.com/threadx"
 
 RUN apt-get update --fix-missing
 
 RUN apt-get install -y g++
-RUN apt-get install -y make
+RUN apt-get install -y make 
+RUN apt-get install -y rsync
 
 
 WORKDIR /usr/bin
@@ -39,7 +40,5 @@ RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so
 ADD ./start.sh /start.sh
 
 EXPOSE 22
-
-
 
 CMD /start.sh
