@@ -237,6 +237,16 @@ int listdir( std::string dir, string destdir, int depth, time_t age) {
 			std::string name = dir+"/"+std::string(ep->d_name);
 
 			if (stat (name.c_str(), &sbuf) == -1) continue;			// TODO: Process error
+
+			// Handle type for file systems (e.g. XFS) not supporting d_type
+
+			if (ep->d_type == DT_UNKNOWN)
+			{
+				if (S_ISDIR(sbuf.st_mode))
+					ep->d_type = DT_DIR;
+				else if (S_ISREG(sbuf.st_mode))
+					ep->d_type = DT_REG;
+			}
 	
 			switch (ep->d_type) {
 
