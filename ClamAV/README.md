@@ -14,6 +14,8 @@ This Dockerfile can be adapted by an administrator to scan directories in variou
 
 This Dockerfile also adds SSH daemon support in the event the administrator wishes to login to the container remotely to do any troubleshooting.  This is optional and can be disabled by commenting out the appropriate sections in the Dockerfile.  **If you do choose to retain SSH access, please change the root password ASAP.**
 
+
+
 ## Creating The Container
 
 Some screeenshots are included below to explain how to create this container with all required settings on Zadara Container Services.
@@ -22,26 +24,32 @@ Some screeenshots are included below to explain how to create this container wit
 
 If you wish to access this container via SSH, specify that port 22 should be accessible:
 
-
+![](https://github.com/zadarastorage/dockerfiles/blob/master/ClamAV/screenshots/add_port.png)
 
 ### Volumes
 
 You need to specify which Zadara NAS Share will be mounted in the container and where.  You can have single or multiple shares mounted for scanning, logging and quarantine.  In this case we are just using 'nas-1' mounted as '/mnt/ex_scan_vol' and 'nas-2' mounted as '/mnt/ex_log_vol':
 
+![](https://github.com/zadarastorage/dockerfiles/blob/master/ClamAV/screenshots/add_vol.png)
 
 ### Environment Variables
 
 These variables allow you to specify your proxy, scan, quarantine and log directories: 
 
+
 (optional)
-PROXY_SERVER - IP Address to the proxy server allowing access to download virus definition updates accessible through an instance on your AWS VPC
-PROXY_PORT - Port number to the proxy server allowing access to download virus definition updates accessible through an instance on your AWS VPC
-DEF_UPD_FREQ - The frequency in which to download the virus definition udpates
+ - PROXY_SERVER - IP Address to the proxy server allowing access to download virus definition updates accessible through an instance on your AWS VPC
+ - PROXY_PORT - Port number to the proxy server allowing access to download virus definition updates accessible through an instance on your AWS VPC
+ - DEF_UPD_FREQ - The frequency in which to download the virus definition udpates
 
 (required)
-SCAN_PATH - The path(s) to the added volume in which to scan.  Multiple paths are simply spearated by a space.
-QUAR_PATH - The path to the added volume in which infected files are moved to.
-LOG_PATH - The path for log output.  'clamav-clamd.log', 'clamav-freshclamd.log' and 'clamav-scans.log' are sent to this directory.
+ - SCAN_PATH - The path(s) to the added volume in which to scan.  Multiple paths are simply spearated by a space.
+ - QUAR_PATH - The path to the added volume in which infected files are moved to.
+ - LOG_PATH - The path for log output.  'clamav-clamd.log', 'clamav-freshclamd.log' and 'clamav-scans.log' are sent to this directory.
+
+![](https://github.com/zadarastorage/dockerfiles/blob/master/ClamAV/screenshots/add_env_variables.png)
+
+
 
 
 
@@ -71,9 +79,9 @@ The instance will not need a lot of local storage, so the default amount (8GB as
 
 
 ##AWS
-	Make sure to allow 3128 from IP Range of the VPSA on the EC2 isntance security group.
+Make sure to allow 3128 from IP Range of the VPSA on the EC2 isntance security group.
 	
-	
+![](https://github.com/zadarastorage/dockerfiles/blob/master/ClamAV/screenshots/aws_sec_group.png)	
 
 Squid Setup (Ubuntu Example)	
 
@@ -83,15 +91,14 @@ Squid Setup (Ubuntu Example)
 	
 ```
 
-### Modify Squid Proxy Config
 
+
+### Add these lines to the Squid Proxy Config
 ```
 	vi /etc/squid3/squid.conf
 
 ```
 
-
-### Add these lines to the Squid Proxy Config
 ```
 	# Add this at the end of the acl part of the file around line 920 of conf file, you can tune this to be more secure as needed.
 
