@@ -64,7 +64,7 @@ Not required
 ClamAV docker container -> squid proxy ec2 instance -> Internet
 <br />
 
-The Squid proxy is used to allow for virus definitions to be retrieved from the internet to the docker container.  Currently our container service does not have direct internet access however since the containers can communicate with the VPC attached to your VPSA, a proxy to the internet can be setup on an EC2 instance. 
+The Squid proxy is used to allow for virus definitions to be retrieved from the internet by the docker container.  Currently our container service does not have direct internet access however since the containers can communicate with the VPC attached to your VPSA, a proxy to the internet can be setup on an EC2 instance. 
 
 
 The instance will not need a lot of local storage, so the default amount (8GB as of this writing) should be ok.
@@ -75,9 +75,8 @@ Make sure to allow 3128 from IP Range of the VPSA on the EC2 instance security g
 	
 ![](https://github.com/zadarastorage/dockerfiles/blob/master/ClamAV/screenshots/aws_sec_group.png)	
 
-Squid Setup (Ubuntu Example)	
 
-### Add Squid Proxy
+### Add Squid Proxy (Ubuntu Example)
 ```
 	sudo apt-get -y install squid3
 	
