@@ -2,7 +2,7 @@
 
 ClamAV is a mature open source AntiVirus solution for Linux.  This container utilizes iNotify to monitor changes in file shares which then feed the files to the ClamAV service for virus scanning.  Infected files are sent to quarantine and events are logged.  
 
-A list of virus definitions can be installed at build time however to keep definitions current it is best add a proxy to allow freshclam to update these regularly.  (An example of adding Squid proxy below)
+A list of virus definitions can be installed at build time however to keep definitions current it is best add a proxy to allow freshclam to update these regularly.  (example of adding Squid proxy below)
 
 
 ## Use Case
