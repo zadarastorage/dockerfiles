@@ -37,12 +37,12 @@ You need to specify which Zadara NAS Share will be mounted in the container and 
 These variables allow you to specify your proxy, scan, quarantine and log directories: 
 
 
-(optional)
+**(optional)**
  - PROXY_SERVER - IP Address to the proxy server allowing access to download virus definition updates accessible through an instance on your AWS VPC
  - PROXY_PORT - Port number to the proxy server allowing access to download virus definition updates accessible through an instance on your AWS VPC
  - DEF_UPD_FREQ - The frequency in which to download the virus definition udpates
 
-(required)
+**(required)**
  - SCAN_PATH - The path(s) to the added volume in which to scan.  Multiple paths are simply spearated by a space.
  - QUAR_PATH - The path to the added volume in which infected files are moved to.
  - LOG_PATH - The path for log output.  'clamav-clamd.log', 'clamav-freshclamd.log' and 'clamav-scans.log' are sent to this directory.
@@ -56,7 +56,7 @@ These variables allow you to specify your proxy, scan, quarantine and log direct
 
 ### Entry Point
 
-Not required, the container will start automatically using.
+Not required
 
 
 
@@ -64,7 +64,8 @@ Not required, the container will start automatically using.
 
 
 
-
+<br />
+<br />
 
 
 
@@ -72,7 +73,7 @@ Not required, the container will start automatically using.
 
 clamav docker container -> squid proxy ec2 instance -> Internet
 
-The Squid proxy is uesd to allow for virus definitions to be retrieved from the internet to the docker container.  Currently our container service does not have internet access for security purposes however since the continers can communicate with the VPC attached to your VPSA, a proxy to the internet can be setup on an EC2 instance. 
+The Squid proxy is uesd to allow for virus definitions to be retrieved from the internet to the docker container.  Currently our container service does not have direct internet access for security purposes however a proxy to the internet can be setup on the VPSA's VPC's EC2 instance. 
 
 
 The instance will not need a lot of local storage, so the default amount (8GB as of this writing) should be ok.
@@ -83,7 +84,7 @@ Make sure to allow 3128 from IP Range of the VPSA on the EC2 isntance security g
 	
 ![](https://github.com/zadarastorage/dockerfiles/blob/master/ClamAV/screenshots/aws_sec_group.png)	
 
-Squid Setup (Ubuntu Example)	
+###Squid Setup (Ubuntu Example)	
 
 ### Add Squid Proxy
 ```
