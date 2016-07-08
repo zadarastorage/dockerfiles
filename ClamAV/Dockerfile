@@ -25,8 +25,13 @@ RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 
 ## Entrypoint files
+COPY ./clamav_daemon.sh /clamav_daemon.sh
+COPY ./inotify_monitor.sh /inotify_monitor.sh
+COPY ./ssh_server.sh /ssh_server.sh
+COPY ./start.sh start.sh
+RUN chmod +x /clamav_daemon.sh
+RUN chmod +x /inotify_monitor.sh
+RUN chmod +x /inotify_monitor.sh
+RUN chmod +x /start.sh
+
 CMD /start.sh
-ADD ./clamav_daemon.sh /clamav_daemon.sh
-ADD ./inotify_monitor.sh /inotify_monitor.sh
-ADD ./ssh_server.sh /ssh_server.sh
-ADD ./start.sh start.sh
