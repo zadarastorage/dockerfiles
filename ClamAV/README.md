@@ -24,13 +24,13 @@ Some screenshots are included below to explain how to create this container with
 
 If you wish to access this container via SSH, specify that port 22 should be accessible:
 
-![](https://github.com/zadarastorage/dockerfiles/blob/master/ClamAV/screenshots/add_port.png)
+![](https://raw.githubusercontent.com/zadarastorage/dockerfiles/master/ClamAV/screenshots/add_port.png)
 
 ### Volumes
 
 You need to specify which Zadara NAS Share will be mounted in the container and where.  You can have single or multiple shares mounted for scanning, logging and quarantine.  In this case we are just using 'nas-1' mounted as '/mnt/ex_scan_vol' and 'nas-2' mounted as '/mnt/ex_log_vol':
 
-![](https://github.com/zadarastorage/dockerfiles/blob/master/ClamAV/screenshots/add_vol.png)
+![](https://raw.githubusercontent.com/zadarastorage/dockerfiles/master/ClamAV/screenshots/add_vol.png)
 
 ### Environment Variables
 
@@ -47,22 +47,16 @@ These variables allow you to specify your proxy, scan, quarantine and log direct
  - QUAR_PATH - The path to the added volume in which infected files are moved to.
  - LOG_PATH - The path for log output.  'clamav-clamd.log', 'clamav-freshclamd.log' and 'clamav-scans.log' are sent to this directory.
 
-![](https://github.com/zadarastorage/dockerfiles/blob/master/ClamAV/screenshots/add_env_variables.png)
+![](https://raw.githubusercontent.com/zadarastorage/dockerfiles/master/ClamAV/screenshots/add_env_variables.png)
 
 ### Entry Point
 
 Not required
 
-
-<br /><br /><br /><br />
-
-
-
 ##SQUID PROXY (optional)
 
-<br />
+
 ClamAV docker container -> squid proxy ec2 instance -> Internet
-<br />
 
 The Squid proxy is used to allow for virus definitions to be retrieved from the internet by the docker container.  Currently our container service does not have direct internet access however since the containers can communicate with the VPC attached to your VPSA, a proxy to the internet can be setup on an EC2 instance. 
 
@@ -73,7 +67,7 @@ The instance will not need a lot of local storage, so the default amount (8GB as
 ##AWS
 Make sure to allow 3128 from IP Range of the VPSA on the EC2 instance security group.
 	
-![](https://github.com/zadarastorage/dockerfiles/blob/master/ClamAV/screenshots/aws_sec_group.png)	
+![](https://raw.githubusercontent.com/zadarastorage/dockerfiles/master/ClamAV/screenshots/aws_sec_group.png)	
 
 
 ### Add Squid Proxy (Ubuntu Example)
@@ -115,5 +109,4 @@ Make sure to allow 3128 from IP Range of the VPSA on the EC2 instance security g
 
 ### Support
 
-Please contact Zadara Support with any questions regarding this container.	
-
+Please contact Zadara Support with any questions regarding this container.
