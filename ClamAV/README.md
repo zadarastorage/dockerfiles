@@ -53,8 +53,7 @@ These variables allow you to specify your proxy, scan, quarantine and log direct
 
 Not required
 
-##SQUID PROXY (optional)
-
+## SQUID PROXY (optional)
 
 ClamAV docker container -> squid proxy ec2 instance -> Internet
 
@@ -63,12 +62,10 @@ The Squid proxy is used to allow for virus definitions to be retrieved from the 
 
 The instance will not need a lot of local storage, so the default amount (8GB as of this writing) should be ok.
 
-
-##AWS
+## AWS
 Make sure to allow 3128 from IP Range of the VPSA on the EC2 instance security group.
 	
 ![](https://raw.githubusercontent.com/zadarastorage/dockerfiles/master/ClamAV/screenshots/aws_sec_group.png)	
-
 
 ### Add Squid Proxy (Ubuntu Example)
 ```
