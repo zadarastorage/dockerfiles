@@ -1,4 +1,4 @@
-FROM       ubuntu
+FROM       ubuntu:trusty
 
 MAINTAINER Howard Young "https://github.com/threadx"
 

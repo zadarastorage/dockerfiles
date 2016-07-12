@@ -3,7 +3,7 @@
 # output.  This is obviously not of much use, but it can easily be adapted
 # to a more specific workload.
 
-FROM ubuntu
+FROM ubuntu:trusty
 MAINTAINER Jeremy Brown "https://github.com/jwbrown77"
 
 # SSH is optional, but it's included here to make experimentation easier.  To

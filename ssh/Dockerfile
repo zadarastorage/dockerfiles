@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM ubuntu:trusty
 MAINTAINER Howard Young <howard@zadarastorage.com>
 
 RUN apt-get update && apt-get install -y openssh-server acl

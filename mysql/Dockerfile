@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM ubuntu:trusty
 MAINTAINER Howard Young <howard@zadarastorage.com>
 
 EXPOSE 22
