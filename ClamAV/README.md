@@ -28,19 +28,19 @@ If you wish to access this container via SSH, specify that port 22 should be acc
 
 ### Volumes
 
-You need to specify which Zadara NAS Share will be mounted in the container and where.  You can have single or multiple shares mounted for scanning, logging and quarantine.  In this case we are just using 'nas-1' mounted as '/mnt/ex_scan_vol' and 'nas-2' mounted as '/mnt/ex_log_vol':
+You need to specify which Zadara NAS Share volume(s) will be mounted in the container.  There can be a single or multiple shares mounted for scanning, logging and quarantine.  In this case we are just using 'nas-1' mounted as '/mnt/ex_scan_vol' and 'nas-2' mounted as '/mnt/ex_log_vol':
 
 ![](https://raw.githubusercontent.com/zadarastorage/dockerfiles/master/ClamAV/screenshots/add_vol.png)
 
 ### Environment Variables
 
-These variables allow you to specify your proxy, scan, quarantine and log directories: 
+These variables allow you to specify your proxy as well as scan, quarantine and log directories residing on the mounted drives: 
 
 
 **(optional)**
  - PROXY_SERVER - IP Address to the proxy server allowing access to download virus definition updates accessible through an instance on your AWS VPC
  - PROXY_PORT - Port number to the proxy server allowing access to download virus definition updates accessible through an instance on your AWS VPC
- - DEF_UPD_FREQ - The frequency in which to download the virus definition updates
+ - DEF_UPD_FREQ - The frequency in which to download the virus definitions updates per day (default is 24)
 
 **(required)**
  - SCAN_PATH - The path(s) to the added volume in which to scan.  Multiple paths are simply separated by a space.
@@ -101,6 +101,15 @@ Make sure to allow 3128 from IP Range of the VPSA on the EC2 instance security g
 	service squid3 restart
 ```
 
+
+
+### Testing
+You can use the EICAR Standard Anti-Virus Test File as described here: https://en.wikipedia.org/wiki/EICAR_test_file
+or drop the following EICAR string in a test file.  The test file should be moved to quarantine.
+
+```
+X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*
+```
 
 
 
