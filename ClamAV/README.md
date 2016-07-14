@@ -105,11 +105,15 @@ Make sure to allow 3128 from IP Range of the VPSA on the EC2 instance security g
 
 ### Testing
 You can use the EICAR Standard Anti-Virus Test File as described here: https://en.wikipedia.org/wiki/EICAR_test_file
-or drop the following EICAR string in a test file.  The test file should be moved to quarantine.
+or drop the following EICAR string in a test file.  
 
 ```
 X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*
 ```
+
+During an actual test, you should observe the EICAR file move from the scan directory to the quarantine directory along with log output indicating the test virus was discovered.
+
+
 
 
 
