@@ -19,7 +19,9 @@ least 2GB memory - 4GB is ideal.
 To launch, first copy the metering zip file downloaded from the VPSA
 into this directory, then run:
 
-```./run.sh```
+```
+./run.sh
+```
 
 ## Using
 
@@ -36,4 +38,6 @@ Finally, open the VPSA Dashboard
 When you are done analyzing the data, you can delete all containers and
 metering data by running:
 
-```./down.sh```
+```
+./down.sh
+```
