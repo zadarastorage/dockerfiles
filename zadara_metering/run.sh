@@ -7,7 +7,13 @@ CreateInfluxDB() {
 
 InjectInfluxData() {
   echo "Injecting data into Influx database..."
-  docker run --network=zadarametering_default --rm -v $PWD/metering.txt:/metering.txt influxdb influx -host influxdb -database 'VPSA1' -import -path=/metering.txt -precision='s'
+  for vpsadir in $(ls -1d */); do
+    vpsa=${vpsadir%?}
+    for influxfile in $(ls -1 ${vpsa}/*.influx); do
+      echo "Injecting ${influxfile}"
+      docker run --network=zadarametering_default --rm -v $PWD/${influxfile}:/metering.txt influxdb influx -host influxdb -database 'VPSA1' -import -path=/metering.txt -precision='s'
+    done
+  done
 }
 
 AddDataSource() {
@@ -27,11 +33,30 @@ AddDashboard() {
     --data-binary @vpsa_statistics.json
 }
 
-echo "Unzipping metering information..."
-unzip metering*.zip
-rm -f meter2csv.py
-echo "Converting metering to influx format..."
-./meter2influx.py metering --all --output_type INFLUXDB --cloud_id vpsa_metering --tsdb_id VPSA1 --vpsa_id vpsa > metering.txt
+ExtractAllMeteringFiles() {
+  echo "Unzipping metering information..."
+  for meteringpackage in $(ls -1 metering*.zip); do
+    targetfile=$(echo ${meteringpackage} | sed -e 's#^metering_\(.*\)_\(20[0-9]\)\(.*\).zip#\2\3#g' )
+    targetfolder=$(echo ${meteringpackage} | sed -e 's#^metering_\(.*\)_'${targetfile}'.zip#\1#g' )
+    echo "  Extracting ${meteringpackage} to ${targetfolder}/${targetfile}..."
+    mkdir -p ${targetfolder}
+    unzip -p ${meteringpackage} metering > ${targetfolder}/${targetfile}
+  done
+}
+
+ConvertAndMergeMeteringFiles() {
+  echo "Converting metering to influx format..."
+  for vpsadir in $(ls -1d */); do
+    vpsa=${vpsadir%?}
+    for meterdb in $(ls -1 ${vpsadir}); do
+      echo "  Converting ${meterdb} for ${vpsa}"
+      ./meter2influx.py ${vpsadir}${meterdb} --all --output_type INFLUXDB --cloud_id vpsa_metering --tsdb_id VPSA1 --vpsa_id ${vpsa} > ${vpsa}/${meterdb}.influx
+    done
+  done
+}
+
+ExtractAllMeteringFiles
+ConvertAndMergeMeteringFiles
 
 # Bring up containers
 echo "Bringing up containers..."
