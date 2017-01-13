@@ -44,7 +44,7 @@ ExtractAllMeteringFiles() {
   done
 }
 
-ConvertAndMergeMeteringFiles() {
+ConvertMeteringFiles() {
   echo "Converting metering to influx format..."
   for vpsadir in $(ls -1d */); do
     vpsa=${vpsadir%?}
@@ -56,7 +56,7 @@ ConvertAndMergeMeteringFiles() {
 }
 
 ExtractAllMeteringFiles
-ConvertAndMergeMeteringFiles
+ConvertMeteringFiles
 
 # Bring up containers
 echo "Bringing up containers..."
