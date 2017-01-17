@@ -56,7 +56,7 @@
         "refresh": false,
         "rows": [
             {
-                "collapse": false,
+                "collapse": true,
                 "height": 233,
                 "panels": [
                     {
@@ -488,7 +488,7 @@
                 "titleSize": "h5"
             },
             {
-                "collapse": false,
+                "collapse": true,
                 "height": 250,
                 "panels": [
                     {
@@ -1579,13 +1579,17 @@
                 "titleSize": "h6"
             },
             {
-                "collapse": true,
+                "collapse": false,
                 "height": 250,
                 "panels": [
                     {
-                        "aliasColors": {},
+                        "aliasColors": {
+                            "system.System": "#7EB26D",
+                            "system.User": "#1F78C1"
+                        },
                         "bars": false,
                         "datasource": "${DS_VPSA1}",
+                        "decimals": null,
                         "fill": 1,
                         "id": 13,
                         "legend": {
@@ -1596,13 +1600,14 @@
                             "min": true,
                             "rightSide": true,
                             "show": true,
+                            "sideWidth": 450,
                             "total": false,
                             "values": true
                         },
                         "lines": true,
                         "linewidth": 1,
                         "links": [],
-                        "nullPointMode": "null",
+                        "nullPointMode": "connected",
                         "percentage": false,
                         "pointradius": 5,
                         "points": false,
@@ -1736,13 +1741,18 @@
                 "titleSize": "h6"
             },
             {
-                "collapse": true,
+                "collapse": false,
                 "height": 250,
                 "panels": [
                     {
-                        "aliasColors": {},
+                        "aliasColors": {
+                            "system.Active": "#1F78C1",
+                            "system.Alloc": "#7EB26D",
+                            "system.Used": "#E24D42"
+                        },
                         "bars": false,
                         "datasource": "${DS_VPSA1}",
+                        "decimals": null,
                         "fill": 1,
                         "id": 14,
                         "legend": {
@@ -1753,13 +1763,14 @@
                             "min": true,
                             "rightSide": true,
                             "show": true,
+                            "sideWidth": 450,
                             "total": false,
                             "values": true
                         },
                         "lines": true,
                         "linewidth": 1,
                         "links": [],
-                        "nullPointMode": "null",
+                        "nullPointMode": "connected",
                         "percentage": false,
                         "pointradius": 5,
                         "points": false,
@@ -1915,9 +1926,13 @@
                 "height": 250,
                 "panels": [
                     {
-                        "aliasColors": {},
+                        "aliasColors": {
+                            "io.iops {bucket_name: read}": "#1F78C1",
+                            "io.iops {bucket_name: write}": "#7EB26D"
+                        },
                         "bars": false,
                         "datasource": "$VPSA_Influx",
+                        "decimals": null,
                         "editable": true,
                         "error": false,
                         "fill": 1,
@@ -1930,6 +1945,7 @@
                             "min": true,
                             "rightSide": true,
                             "show": true,
+                            "sideWidth": 450,
                             "total": false,
                             "values": true
                         },
@@ -1970,7 +1986,7 @@
                                 ],
                                 "measurement": "io",
                                 "policy": "$retention",
-                                "query": "SELECT mean(\"iops\") FROM \"$retention\".\"io\" WHERE \"cloud_id\" =~ /^$cloud$/ AND \"vpsa_id\" =~ /^$vpsa$/ AND \"dev_name\" =~ /^$dev_name$/ AND \"dev_server_name\" =~ /^$server_name$/ AND \"bucket_name\" =~ /^$bucket_name$/ AND \"dev_ext_name\" =~ /^$dev_ext_name$/ AND $timeFilter GROUP BY time($interval), \"bucket_name\" fill(null)",
+                                "query": "SELECT mean(\"iops\") as iops FROM \"$retention\".\"io\" WHERE \"cloud_id\" =~ /^$cloud$/ AND \"vpsa_id\" =~ /^$vpsa$/ AND \"dev_name\" =~ /^$dev_name$/ AND \"dev_server_name\" =~ /^$server_name$/ AND \"bucket_name\" =~ /^$bucket_name$/ AND \"dev_ext_name\" =~ /^$dev_ext_name$/ AND $timeFilter GROUP BY time($interval), \"bucket_name\" fill(null)",
                                 "rawQuery": true,
                                 "refId": "A",
                                 "resultFormat": "time_series",
@@ -2076,9 +2092,13 @@
                 "height": "250",
                 "panels": [
                     {
-                        "aliasColors": {},
+                        "aliasColors": {
+                            "io.mbps {bucket_name: read}": "#1F78C1",
+                            "io.mbps {bucket_name: write}": "#7EB26D"
+                        },
                         "bars": false,
                         "datasource": "${DS_VPSA1}",
+                        "decimals": null,
                         "editable": true,
                         "error": false,
                         "fill": 1,
@@ -2091,6 +2111,7 @@
                             "min": true,
                             "rightSide": true,
                             "show": true,
+                            "sideWidth": 450,
                             "total": false,
                             "values": true
                         },
@@ -2125,7 +2146,7 @@
                                 ],
                                 "measurement": "io",
                                 "policy": "default",
-                                "query": "SELECT mean(\"mbps\") FROM \"$retention\".\"io\" WHERE \"cloud_id\" =~ /^$cloud$/ AND \"vpsa_id\" =~ /^$vpsa$/ AND \"dev_name\" =~ /^$dev_name$/ AND \"dev_server_name\" =~ /^$server_name$/ AND \"bucket_name\" =~ /^$bucket_name$/ AND \"dev_ext_name\" =~ /^$dev_ext_name$/ AND $timeFilter GROUP BY time($interval), \"bucket_name\" fill(null)",
+                                "query": "SELECT mean(\"mbps\") as mbps FROM \"$retention\".\"io\" WHERE \"cloud_id\" =~ /^$cloud$/ AND \"vpsa_id\" =~ /^$vpsa$/ AND \"dev_name\" =~ /^$dev_name$/ AND \"dev_server_name\" =~ /^$server_name$/ AND \"bucket_name\" =~ /^$bucket_name$/ AND \"dev_ext_name\" =~ /^$dev_ext_name$/ AND $timeFilter GROUP BY time($interval), \"bucket_name\" fill(null)",
                                 "rawQuery": true,
                                 "refId": "A",
                                 "resultFormat": "time_series",
@@ -2201,9 +2222,13 @@
                 "height": "250",
                 "panels": [
                     {
-                        "aliasColors": {},
+                        "aliasColors": {
+                            "io.avg_latency {bucket_name: read}": "#1F78C1",
+                            "io.avg_latency {bucket_name: write}": "#7EB26D"
+                        },
                         "bars": false,
                         "datasource": "${DS_VPSA1}",
+                        "decimals": null,
                         "editable": true,
                         "error": false,
                         "fill": 1,
@@ -2216,6 +2241,7 @@
                             "min": true,
                             "rightSide": true,
                             "show": true,
+                            "sideWidth": 450,
                             "total": false,
                             "values": true
                         },
@@ -2250,7 +2276,7 @@
                                 ],
                                 "measurement": "io",
                                 "policy": "default",
-                                "query": "SELECT mean(\"latency_ms\") FROM \"$retention\".\"io\" WHERE \"cloud_id\" =~ /^$cloud$/ AND \"vpsa_id\" =~ /^$vpsa$/ AND \"dev_name\" =~ /^$dev_name$/ AND \"dev_server_name\" =~ /^$server_name$/ AND \"bucket_name\" =~ /^$bucket_name$/ AND \"dev_ext_name\" =~ /^$dev_ext_name$/ AND $timeFilter GROUP BY time($interval), \"bucket_name\" fill(null)",
+                                "query": "SELECT mean(\"latency_ms\") as avg_latency FROM \"$retention\".\"io\" WHERE \"cloud_id\" =~ /^$cloud$/ AND \"vpsa_id\" =~ /^$vpsa$/ AND \"dev_name\" =~ /^$dev_name$/ AND \"dev_server_name\" =~ /^$server_name$/ AND \"bucket_name\" =~ /^$bucket_name$/ AND \"dev_ext_name\" =~ /^$dev_ext_name$/ AND $timeFilter GROUP BY time($interval), \"bucket_name\" fill(null)",
                                 "rawQuery": true,
                                 "refId": "A",
                                 "resultFormat": "time_series",
@@ -2326,9 +2352,13 @@
                 "height": "250",
                 "panels": [
                     {
-                        "aliasColors": {},
+                        "aliasColors": {
+                            "io.max_latency {bucket_name: read}": "#1F78C1",
+                            "io.max_latency {bucket_name: write}": "#7EB26D"
+                        },
                         "bars": false,
                         "datasource": "${DS_VPSA1}",
+                        "decimals": null,
                         "editable": true,
                         "error": false,
                         "fill": 1,
@@ -2341,6 +2371,7 @@
                             "min": true,
                             "rightSide": true,
                             "show": true,
+                            "sideWidth": 450,
                             "total": false,
                             "values": true
                         },
@@ -2375,7 +2406,7 @@
                                 ],
                                 "measurement": "io",
                                 "policy": "default",
-                                "query": "SELECT mean(\"max_latency_ms\") FROM \"$retention\".\"io\" WHERE \"cloud_id\" =~ /^$cloud$/ AND \"vpsa_id\" =~ /^$vpsa$/ AND \"dev_name\" =~ /^$dev_name$/ AND \"dev_server_name\" =~ /^$server_name$/ AND \"bucket_name\" =~ /^$bucket_name$/ AND \"dev_ext_name\" =~ /^$dev_ext_name$/ AND $timeFilter GROUP BY time($interval), \"bucket_name\" fill(null)",
+                                "query": "SELECT mean(\"max_latency_ms\") as max_latency FROM \"$retention\".\"io\" WHERE \"cloud_id\" =~ /^$cloud$/ AND \"vpsa_id\" =~ /^$vpsa$/ AND \"dev_name\" =~ /^$dev_name$/ AND \"dev_server_name\" =~ /^$server_name$/ AND \"bucket_name\" =~ /^$bucket_name$/ AND \"dev_ext_name\" =~ /^$dev_ext_name$/ AND $timeFilter GROUP BY time($interval), \"bucket_name\" fill(null)",
                                 "rawQuery": true,
                                 "refId": "A",
                                 "resultFormat": "time_series",
@@ -2447,13 +2478,140 @@
                 "titleSize": "h6"
             },
             {
+                "collapse": false,
+                "height": 250,
+                "panels": [
+                    {
+                        "aliasColors": {
+                            "io.io_size {bucket_name: read}": "#1F78C1",
+                            "io.io_size {bucket_name: write}": "#7EB26D"
+                        },
+                        "bars": false,
+                        "datasource": "${DS_VPSA1}",
+                        "decimals": null,
+                        "editable": true,
+                        "error": false,
+                        "fill": 1,
+                        "id": 19,
+                        "legend": {
+                            "alignAsTable": true,
+                            "avg": true,
+                            "current": false,
+                            "max": true,
+                            "min": true,
+                            "rightSide": true,
+                            "show": true,
+                            "sideWidth": 450,
+                            "total": false,
+                            "values": true
+                        },
+                        "lines": true,
+                        "linewidth": 1,
+                        "links": [],
+                        "nullPointMode": "connected",
+                        "percentage": false,
+                        "pointradius": 5,
+                        "points": false,
+                        "renderer": "flot",
+                        "seriesOverrides": [],
+                        "span": 12,
+                        "stack": false,
+                        "steppedLine": false,
+                        "targets": [
+                            {
+                                "dsType": "influxdb",
+                                "groupBy": [
+                                    {
+                                        "params": [
+                                            "$interval"
+                                        ],
+                                        "type": "time"
+                                    },
+                                    {
+                                        "params": [
+                                            "null"
+                                        ],
+                                        "type": "fill"
+                                    }
+                                ],
+                                "policy": "default",
+                                "query": "SELECT mean(\"mbps\")*1024/mean(\"iops\") as io_size FROM \"$retention\".\"io\" WHERE \"cloud_id\" =~ /^$cloud$/ AND \"vpsa_id\" =~ /^$vpsa$/ AND \"dev_name\" =~ /^$dev_name$/ AND \"dev_server_name\" =~ /^$server_name$/ AND \"bucket_name\" =~ /^$bucket_name$/ AND \"dev_ext_name\" =~ /^$dev_ext_name$/ AND $timeFilter GROUP BY time($interval), \"bucket_name\" fill(null)",
+                                "rawQuery": true,
+                                "refId": "A",
+                                "resultFormat": "time_series",
+                                "select": [
+                                    [
+                                        {
+                                            "params": [
+                                                "value"
+                                            ],
+                                            "type": "field"
+                                        },
+                                        {
+                                            "params": [],
+                                            "type": "mean"
+                                        }
+                                    ]
+                                ],
+                                "tags": []
+                            }
+                        ],
+                        "thresholds": [],
+                        "timeFrom": null,
+                        "timeShift": null,
+                        "title": "Average IO Size (KB/s)",
+                        "tooltip": {
+                            "msResolution": false,
+                            "shared": true,
+                            "sort": 0,
+                            "value_type": "individual"
+                        },
+                        "type": "graph",
+                        "xaxis": {
+                            "mode": "time",
+                            "name": null,
+                            "show": true,
+                            "values": []
+                        },
+                        "yaxes": [
+                            {
+                                "format": "deckbytes",
+                                "label": null,
+                                "logBase": 1,
+                                "max": null,
+                                "min": null,
+                                "show": true
+                            },
+                            {
+                                "format": "short",
+                                "label": null,
+                                "logBase": 1,
+                                "max": null,
+                                "min": null,
+                                "show": true
+                            }
+                        ]
+                    }
+                ],
+                "repeat": null,
+                "repeatIteration": null,
+                "repeatRowId": null,
+                "showTitle": false,
+                "title": "Average IO Size",
+                "titleSize": "h6"
+            },
+            {
                 "collapse": true,
                 "height": 250,
                 "panels": [
                     {
-                        "aliasColors": {},
+                        "aliasColors": {
+                            "io.active_ios {bucket_name: read}": "#1F78C1",
+                            "io.active_ios {bucket_name: write}": "#7EB26D"
+                        },
                         "bars": false,
                         "datasource": "${DS_VPSA1}",
+                        "decimals": null,
                         "editable": true,
                         "error": false,
                         "fill": 1,
@@ -2466,6 +2624,7 @@
                             "min": true,
                             "rightSide": true,
                             "show": true,
+                            "sideWidth": 450,
                             "total": false,
                             "values": true
                         },
@@ -2500,7 +2659,7 @@
                                 ],
                                 "measurement": "io",
                                 "policy": "default",
-                                "query": "SELECT mean(\"active_ios\") FROM \"$retention\".\"io\" WHERE \"cloud_id\" =~ /^$cloud$/ AND \"vpsa_id\" =~ /^$vpsa$/ AND \"dev_name\" =~ /^$dev_name$/ AND \"dev_server_name\" =~ /^$server_name$/ AND \"bucket_name\" =~ /^$bucket_name$/ AND \"dev_ext_name\" =~ /^$dev_ext_name$/ AND $timeFilter GROUP BY time($interval), \"bucket_name\" fill(null)",
+                                "query": "SELECT mean(\"active_ios\") as active_ios FROM \"$retention\".\"io\" WHERE \"cloud_id\" =~ /^$cloud$/ AND \"vpsa_id\" =~ /^$vpsa$/ AND \"dev_name\" =~ /^$dev_name$/ AND \"dev_server_name\" =~ /^$server_name$/ AND \"bucket_name\" =~ /^$bucket_name$/ AND \"dev_ext_name\" =~ /^$dev_ext_name$/ AND $timeFilter GROUP BY time($interval), \"bucket_name\" fill(null)",
                                 "rawQuery": true,
                                 "refId": "A",
                                 "resultFormat": "time_series",
@@ -2739,8 +2898,8 @@
             ]
         },
         "time": {
-            "from": "now/d",
-            "to": "now/d"
+            "from": "now-7d",
+            "to": "now"
         },
         "timepicker": {
             "refresh_intervals": [
@@ -2769,7 +2928,7 @@
         },
         "timezone": "browser",
         "title": "VPSA Statistics",
-        "version": 1
+        "version": 4
     },
     "inputs": [
         {
