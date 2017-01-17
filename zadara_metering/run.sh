@@ -48,7 +48,7 @@ ConvertMeteringFiles() {
   echo "Converting metering to influx format..."
   for vpsadir in $(ls -1d */); do
     vpsa=${vpsadir%?}
-    for meterdb in $(ls -1 ${vpsadir}); do
+    for meterdb in $(ls -1 ${vpsadir} | grep -v '.influx'); do
       echo "  Converting ${meterdb} for ${vpsa}"
       ./meter2influx.py ${vpsadir}${meterdb} --all --output_type INFLUXDB --cloud_id vpsa_metering --tsdb_id VPSA1 --vpsa_id ${vpsa} > ${vpsa}/${meterdb}.influx
     done
