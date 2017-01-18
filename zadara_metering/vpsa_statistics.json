@@ -2559,7 +2559,7 @@
                         "thresholds": [],
                         "timeFrom": null,
                         "timeShift": null,
-                        "title": "Average IO Size (KB/s)",
+                        "title": "Average IO Size (KB)",
                         "tooltip": {
                             "msResolution": false,
                             "shared": true,
@@ -2597,7 +2597,7 @@
                 "repeatIteration": null,
                 "repeatRowId": null,
                 "showTitle": false,
-                "title": "Average IO Size",
+                "title": "Average IO Size (KB)",
                 "titleSize": "h6"
             },
             {
