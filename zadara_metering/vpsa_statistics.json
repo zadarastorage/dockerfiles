@@ -56,7 +56,7 @@
         "refresh": false,
         "rows": [
             {
-                "collapse": true,
+                "collapse": false,
                 "height": 233,
                 "panels": [
                     {
@@ -488,7 +488,7 @@
                 "titleSize": "h5"
             },
             {
-                "collapse": true,
+                "collapse": false,
                 "height": 250,
                 "panels": [
                     {
@@ -1584,6 +1584,7 @@
                 "panels": [
                     {
                         "aliasColors": {
+                            "system.IOWait": "#E24D42",
                             "system.System": "#7EB26D",
                             "system.User": "#1F78C1"
                         },
@@ -1614,7 +1615,7 @@
                         "renderer": "flot",
                         "seriesOverrides": [],
                         "span": 12,
-                        "stack": true,
+                        "stack": false,
                         "steppedLine": false,
                         "targets": [
                             {
@@ -1635,6 +1636,8 @@
                                 ],
                                 "measurement": "system",
                                 "policy": "autogen",
+                                "query": "SELECT max(\"cpu_user\") AS \"User\", max(\"cpu_system\") AS \"System\", max(\"cpu_iowait\") as \"IOWait\" FROM \"autogen\".\"system\" WHERE \"cloud_id\" =~ /^$cloud$/ AND \"vpsa_id\" =~ /^$vpsa$/ AND \"dev_ext_name\" = 'system-stat' AND $timeFilter GROUP BY time($interval) fill(null)",
+                                "rawQuery": true,
                                 "refId": "A",
                                 "resultFormat": "time_series",
                                 "select": [
@@ -2559,7 +2562,7 @@
                         "thresholds": [],
                         "timeFrom": null,
                         "timeShift": null,
-                        "title": "Average IO Size (KB)",
+                        "title": "Average IO Size (KB/s)",
                         "tooltip": {
                             "msResolution": false,
                             "shared": true,
@@ -2597,7 +2600,7 @@
                 "repeatIteration": null,
                 "repeatRowId": null,
                 "showTitle": false,
-                "title": "Average IO Size (KB)",
+                "title": "Average IO Size",
                 "titleSize": "h6"
             },
             {
@@ -2898,7 +2901,7 @@
             ]
         },
         "time": {
-            "from": "now-7d",
+            "from": "now-24h",
             "to": "now"
         },
         "timepicker": {
