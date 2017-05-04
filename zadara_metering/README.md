@@ -41,3 +41,17 @@ metering data by running:
 ```
 ./down.sh
 ```
+
+## Running on standalone Ubuntu instance in EC2
+
+Install the following packages using apt-get:
+
+    docker, docker-compose, unzip, telnet
+
+If not running the web browser locally, forward the following ports to access
+grafana from your desktop browser.
+
+    3000:localhost:3000 - Access the grafana web interface on port 3000.
+    8086:localhost:8086 - The webUI queries influxdb on port 8086.
+
+Note that not forwarding port 8086 will result in empty dashboards being displayed.
