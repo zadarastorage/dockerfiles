@@ -6,5 +6,5 @@ if [ "${SSH_SERVER}" == "enabled" ]; then
 		fi
 		echo "${SSH_USER}:${SSH_PASSWORD}" | chpasswd
 	fi
-	/usr/sbin/sshd -D
+	/usr/sbin/sshd -D &
 fi
