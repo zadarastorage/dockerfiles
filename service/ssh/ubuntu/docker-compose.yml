@@ -1,0 +1,13 @@
+version: '2'
+
+services:
+  test:
+    build: ./
+    ports:
+      - "8022:22"
+    environment:
+      http_proxy:
+      https_proxy:
+      SSH_SERVER: "enabled"
+      SSH_USER: root
+      SSH_PASSWORD: zadara
