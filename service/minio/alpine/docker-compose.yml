@@ -1,0 +1,25 @@
+version: '2'
+
+services:
+  test:
+    build: ./
+    volumes:
+      - "/tmp/export:/export"
+      - "/tmp/conf:/conf"
+    ports:
+      - "8022:22"
+      - "8080:9000"
+    environment:
+      http_proxy:
+      https_proxy:
+      SSH_SERVER: "enabled"
+      SSH_USER: root
+      SSH_PASSWORD: zadara
+      MINIO_SERVER: "enabled"
+      MINIO_ACCESS_KEY: "zadara"
+      MINIO_SECRET_KEY: "zadarazadara"
+      MINIO_REGION: "zadara_vpsa"
+      MINIO_BROWSER: "on"
+      MINIO_DATA_DIR: "/export"
+      MINIO_CONF_DIR: "/conf"
+      VPSA_ACCESS_KEY: ""
