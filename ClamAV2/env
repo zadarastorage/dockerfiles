@@ -1,0 +1,14 @@
+**Required**
+SCAN_PATH
+LOG_PATH
+QUAR_PATH
+
+**Optional**
+PROXY_SERVER
+PROXY_PORT
+DEF_UPD_FREQ
+ENABLE_SSH=anything
+MODE=[av,find] (Default is both)
+
+FIND_CRON="* * * * *"
+AV_CRON="* * * * *"
