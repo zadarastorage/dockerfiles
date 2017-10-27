@@ -2,7 +2,7 @@
 # Build for GCP gsutil
 #
 
-FROM zadara/ssh 
+FROM zadara/ssh:alpine
 
 MAINTAINER Howard Young "https://github.com/threadx"
 
