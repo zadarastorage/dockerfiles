@@ -3,7 +3,7 @@ ENV SSH_SERVER="disabled"
 
 LABEL description="Minio-powered S3 service"
 
-RUN mkdir /app
+RUN mkdir /app && \
     wget https://dl.minio.io/server/minio/release/linux-amd64/minio -O /app/minio && \
     chmod +x /app/minio
 
