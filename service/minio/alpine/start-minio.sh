@@ -6,5 +6,5 @@ if [ "${MINIO_SERVER}" == "enabled" ]; then
 		VPSA_DISPLAY_NAME=$(curl -s -k -X GET "https://${VPSA_IP}/" | grep 'VsaGui.vpsaName' | sed "s#.*\"\(.*\)\".*#\1#g")
 		export MINIO_REGION=${VPSA_DISPLAY_NAME}
 	fi
-	/app/minio --quiet server --config-dir "${MINIO_CONF_DIR}" "${MINIO_DATA_DIR}" &>> /dev/null
+	/app/minio --quiet server --config-dir "${MINIO_CONF_DIR}" "${MINIO_DATA_DIR}" | tee "${MINIO_CONF_DIR}/minio.log"
 fi
