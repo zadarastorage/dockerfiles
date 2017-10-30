@@ -6,5 +6,6 @@ if [[ "${SSH_SERVER}" == "enabled" ]]; then
 		fi
 		echo "${SSH_USER}:${SSH_PASSWORD}" | chpasswd
 	fi
-	service ssh start
+#	service ssh start
+	/usr/sbin/sshd -D
 fi
