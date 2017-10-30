@@ -1,7 +1,6 @@
 #!/bin/sh
-set -m
-
 for x in $(ls /start/*.sh); do
+	echo ${x}
 	/bin/bash ${x} &
 done
 

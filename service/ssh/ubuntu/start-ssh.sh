@@ -8,4 +8,8 @@ if [[ "${SSH_SERVER}" == "enabled" ]]; then
 	fi
 #	service ssh start
 	/usr/sbin/sshd -D
+else
+	while :; do
+		sleep 60m
+	done
 fi

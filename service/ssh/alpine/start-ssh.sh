@@ -7,4 +7,8 @@ if [ "${SSH_SERVER}" == "enabled" ]; then
 		echo "${SSH_USER}:${SSH_PASSWORD}" | chpasswd
 	fi
 	/usr/sbin/sshd -D
+else
+	while :; do
+		sleep 60m
+	done
 fi
