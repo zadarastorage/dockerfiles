@@ -1,0 +1,24 @@
+version: '2'
+
+services:
+  test:
+    build: ./
+    volumes:
+      - "/tmp/export:/export"
+      - "/tmp/conf:/conf"
+    ports:
+      - "8022:22"
+    environment:
+      http_proxy:
+      https_proxy:
+      SSH_SERVER: "enabled"
+      SSH_USER: root
+      SSH_PASSWORD: zadara
+      VPSA_ACCESS_KEY: ""
+      DIRECTORY_DEPTH: 2
+      TARGET_DIRECTORY: "/"
+      TREE: "false" 
+      TREE_OUTPUT_FORMAT: "XML"
+      CRON_STRING: "* * * * *"
+      OUTPUT_DIRECTORY: "/"
+      SIZES_HUMAN_READABLE: "false"
