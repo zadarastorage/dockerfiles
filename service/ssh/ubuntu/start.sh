@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 for x in $(ls /start/*.sh); do
 	echo ${x}
 	/bin/bash ${x} &
@@ -8,7 +8,7 @@ pids=`jobs -p`
 
 exitcode=0
 
-function terminate() {
+function terminate {
     trap "" CHLD
 
     for pid in $pids; do

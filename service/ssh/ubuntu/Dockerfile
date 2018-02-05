@@ -7,7 +7,7 @@ LABEL description="Simple SSH Server preloaded with some commonly-used packages"
 
 # Install and configure SSH
 RUN apt-get update && \
-    apt-get install -y openssh-server acl attr rsync curl wget && \
+    apt-get install -y openssh-server acl attr rsync curl wget screen && \
     mkdir /var/run/sshd && \
     sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
 #    echo 'root:zadara' | chpasswd && \
