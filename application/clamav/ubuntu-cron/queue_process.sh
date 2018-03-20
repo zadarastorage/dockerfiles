@@ -1,5 +1,13 @@
 #!/bin/bash
-SCANDIRS=( ${SCAN_PATH} )
+SCANDIRS=()
+if [[ -n "${SCAN_FILE}" && -e "${SCAN_FILE}" ]]; then
+	OIFS=${IFS}
+	IFS=$'\n'
+	SCANDIRS=( $(cat "${SCAN_FILE}") )
+	IFS=${OIFS}
+elif [[ -n "${SCAN_PATH}" ]]; then
+	SCANDIRS=( ${SCAN_PATH} )
+fi
 STATSFILE="${LOG_PATH}/clamdata.csv"
 QUEUEDIR="${LOG_PATH}/queue"
 LOGDIR="${LOG_PATH}/scans"

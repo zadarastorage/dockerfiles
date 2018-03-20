@@ -1,5 +1,8 @@
+**One of these is required**
+SCAN_PATH="/mnt/dir /mnt/dir2" #Space-delimited dirs as mounted inside the container
+SCAN_FILE="/mnt/dir/paths.txt" #Text file that is newline-delimited of dirs as mounted inside the container, OVERRIDES SCAN_PATH
+
 **Required**
-SCAN_PATH
 LOG_PATH
 QUAR_PATH
 
