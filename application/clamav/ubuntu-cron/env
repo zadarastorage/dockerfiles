@@ -10,5 +10,8 @@ DEF_UPD_FREQ
 ENABLE_SSH=anything
 MODE=[av,find] (Default is both)
 
+VPSA_ACCESSKY=[VPSA user accesskey]
+VPSA_IP=[Optional, will determine on own]
+
 FIND_CRON="* * * * *"
 AV_CRON="* * * * *"

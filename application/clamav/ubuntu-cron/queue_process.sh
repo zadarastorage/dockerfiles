@@ -8,6 +8,8 @@ IFS=$'\n'
 
 HOSTID=$(hostname)
 
+source _functions.sh
+
 # Confirm this script is not already running, if so, exit
 if [[ -e "${LOCKDIR}/${HOSTID}-scan.active" ]]; then
 	if kill -0 $(cat ${LOCKDIR}/${HOSTID}-scan.active); then
@@ -17,6 +19,8 @@ fi
 
 echo $$ > ${LOCKDIR}/${HOSTID}-scan.active
 
+INFECTED=( "${LOGDIR}/$(date +%Y/%m)/$(date +%Y-%m-%d).log" )
+
 ## Functions
 avFile(){
 	scanobject="${1}"
@@ -25,9 +29,15 @@ avFile(){
 		DATEFILE=$(date +%Y-%m-%d)
 		mkdir -p ${LOGDIR}/${DATEDIR}
 		if [[ "${QUAR_PATH}" != "" ]]; then
-			(echo -n "$(date) -> " ;clamdscan "${scanobject}" --move="${QUAR_PATH}" --no-summary) >> ${LOGDIR}/${DATEDIR}/${DATEFILE}.log
+			RESULT=$( (echo -n "$(date) -> " ;clamdscan "${scanobject}" --move="${QUAR_PATH}" --no-summary) | tee -a ${LOGDIR}/${DATEDIR}/${DATEFILE}.log )
 		else
-			(echo -n "$(date) -> " ;clamdscan "${scanobject}" --no-summary) >> ${LOGDIR}/${DATEDIR}/${DATEFILE}.log
+			RESULT=$( (echo -n "$(date) -> " ;clamdscan "${scanobject}" --no-summary) | tee -a ${LOGDIR}/${DATEDIR}/${DATEFILE}.log )
+		fi
+		echo "${RESULT}"
+		ISOK=": OK"
+		length=$(( ${#RESULT} - ${#ISOK} ))
+		if [[ "${VPSA_ACCESSKEY}" != "" && "${RESULT:$length:${#ISOK}}" != "${ISOK}" && ${#INFECTED[@]} -lt 110 ]]; then
+			INFECTED+=( "${scanobject}" )
 		fi
 	fi
 }
@@ -51,5 +61,9 @@ while [[ ${#PENDINGFILES[@]} -gt 0 ]]; do
 	done
 	PENDINGFILES=( $(find ${QUEUEDIR}/ -mindepth 1 -maxdepth 1 -type f -mmin +2 -iname '*.log' | sort -n | head -n 20) )
 done
+
+if [[ "${VPSA_ACCESSKEY}" != "" && "${INFECTED[1]}" != "" ]]; then
+	supportTicket "LOW" "Infections detected in cycle." "$(printf '%s\\n' "${INFECTED[@]:0:100}")"
+fi
 
 rm ${LOCKDIR}/${HOSTID}-scan.active

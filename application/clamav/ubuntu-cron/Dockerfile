@@ -12,8 +12,12 @@ EXPOSE 22
 
 ## Clamav setup
 RUN apt-get update \
-  && apt-get install -y clamav-daemon clamav-freshclam \
+  && apt-get install -y clamav-daemon clamav-freshclam curl \
   && freshclam
+
+# Add jq
+RUN wget https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -O /usr/local/bin/jq && \
+  chmod +x /usr/local/bin/jq
 
 ## Cleanup
 RUN apt-get clean \
