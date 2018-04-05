@@ -6,7 +6,11 @@ if [[ $EUID -ne 0 ]]; then
 	echo "This needs to run as root/sudo"
 else
 	# Install docker-ce
+	apt-get -y update
 	apt-get -y install apt-transport-https ca-certificates curl
+	if [[ -z "$(which add-apt-repository)" ]]; then
+		apt-get -y install software-properties-common python-software-properties
+	fi
 	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
 	add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 	apt-get -y update

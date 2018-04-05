@@ -10,7 +10,7 @@ services:
    grafana:
      depends_on:
        - influxdb
-     image: grafana/grafana
+     image: grafana/grafana:4.6.3
      ports:
        - "3000:3000"
      restart: always
