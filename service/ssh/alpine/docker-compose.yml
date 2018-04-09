@@ -11,3 +11,4 @@ services:
       SSH_SERVER: "enabled"
       SSH_USER: root
       SSH_PASSWORD: zadara
+      CRON_SERVICE: "enabled"
