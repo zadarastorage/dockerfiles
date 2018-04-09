@@ -17,9 +17,11 @@ EXPOSE 22
 
 ENV SSH_SERVER="enabled" \
     SSH_USER="root" \
-    SSH_PASSWORD="zadara"
+    SSH_PASSWORD="zadara" \
+    CRON_SERVICE="disabled"
 
 COPY ./start.sh /start.sh
 COPY ./start-ssh.sh /start/000-ssh.sh
+COPY ./start-cron.sh /start/000-cron.sh
 
 CMD ["/start.sh"]
