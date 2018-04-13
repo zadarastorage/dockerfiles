@@ -1,4 +1,10 @@
 #!/bin/bash
+if [ -d '/runonce' ]; then
+	for x in $(ls /runonce/*.sh); do
+		echo ${x}
+		/bin/bash ${x} &
+	done
+fi
 for x in $(ls /start/*.sh); do
 	echo ${x}
 	/bin/bash ${x} &
