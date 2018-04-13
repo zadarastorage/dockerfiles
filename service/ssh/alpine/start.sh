@@ -2,7 +2,7 @@
 if [ -d "/runonce" ]; then
 	for x in $(ls /runonce/*.sh); do
 		echo ${x}
-		/bin/sh ${x} &
+		/bin/sh ${x}
 	done
 fi
 for x in $(ls /start/*.sh); do
