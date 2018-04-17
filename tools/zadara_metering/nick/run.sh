@@ -101,5 +101,6 @@ AddDashboard
 
 echo 
 echo All done!
+echo
 echo Go to http://${server_ip}:3000 and log in using credentials 'admin/zadara' to view the graphs.
 echo
