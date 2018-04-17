@@ -3128,7 +3128,7 @@
       "30d"
     ]
   },
-  "timezone": "browser",
+  "timezone": "utc",
   "title": "VPSA Statistics",
   "uid": "YwqF15Wiz",
   "version": 1
