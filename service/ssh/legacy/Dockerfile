@@ -1,7 +1,7 @@
 FROM ubuntu:trusty
 MAINTAINER Howard Young <howard@zadarastorage.com>
 
-RUN apt-get update && apt-get install -y openssh-server acl
+RUN apt-get update && apt-get install -y openssh-server acl attr
 
 RUN mkdir /var/run/sshd
 RUN echo 'root:zadara' | chpasswd
