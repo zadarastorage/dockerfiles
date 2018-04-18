@@ -2,9 +2,6 @@
 
 # If docker isn't responding to info command, or if the binary is missing
 # then notify and exit
-#access_key=Z0UN3E7H38JQ5T96DXIH
-#vpsa_address=vsa-00000015-uk-lon-01.zadaravpsa.com
-#vpsa_name=Nick
 
 access_key=${1}
 vpsa_address=${2}
