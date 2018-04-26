@@ -1,7 +1,10 @@
 #!/bin/ash
 source /tmp/env.sh
 #set -x
+LOCKDIR="/dev/shm"
 # Exit if another instance is still running
+exec {lock_fd}>${LOCKDIR}/autoexpand.lock || exit 1
+flock -n -x "$lock_fd"
 # Exit if VPSA_ACCESS_KEY is empty
 if [ -z "${VPSA_ACCESS_KEY}" ]; then
 	exit 1
@@ -52,7 +55,7 @@ function vpsaAPI {
 		CMD="${CMD} -d '${PAYLOAD}'"
 	fi
 	CMD="${CMD} https://${VPSA_IP}/api/${URI}"
-	(>&2 echo ${CMD} )
+#	(>&2 echo ${CMD} )
 	eval ${CMD} | jq -c --raw-output '.'
 }
 
@@ -121,7 +124,9 @@ function expandVolume {
 	if [ -n "${INCREASE_BY_GB}" -a ${INCREASE_BY_GB} -gt 0 ]; then
 		PAYLOAD=$(echo "{}"|jq -c --raw-output --arg increase "${INCREASE_BY_GB}G" '.capacity=$increase')
 		vpsaAPI -m 'post' -u "volumes/${VOLUME_ID}/expand.json" -p "${PAYLOAD}"
+		sleep 1s
 		generateTicket "${VOLUME_ID}" "${VOLUME_NAME}" "${SIZE_GB}" "${FREE_GB}" "${INCREASE_BY_GB}"
+		sleep 1s
 	fi
 }
 
@@ -164,3 +169,4 @@ for entry in ${VOLUMES}; do
 	fi
 done
 IFS=$OIFS
+flock -u "$lock_fd"
