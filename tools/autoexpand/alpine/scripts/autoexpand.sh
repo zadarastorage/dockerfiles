@@ -3,8 +3,8 @@ source /tmp/env.sh
 #set -x
 LOCKDIR="/dev/shm"
 # Exit if another instance is still running
-exec {lock_fd}>${LOCKDIR}/autoexpand.lock || exit 1
-flock -n -x "$lock_fd"
+#exec {lock_fd}>${LOCKDIR}/autoexpand.lock || exit 1
+flock -n -x "${LOCKDIR}/autoexpand.lock"
 # Exit if VPSA_ACCESS_KEY is empty
 if [ -z "${VPSA_ACCESS_KEY}" ]; then
 	exit 1
@@ -169,4 +169,4 @@ for entry in ${VOLUMES}; do
 	fi
 done
 IFS=$OIFS
-flock -u "$lock_fd"
+flock -u "${LOCKDIR}/autoexpand.lock"
