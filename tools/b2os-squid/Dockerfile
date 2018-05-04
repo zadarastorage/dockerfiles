@@ -8,6 +8,8 @@ LABEL description="Squid proxy preconfigured with Object Storage Endpoints for Z
 RUN apk --no-cache add squid ca-certificates
 EXPOSE 3128
 
+ENV CUSTOM_MATCH=""
+
 COPY ./start.sh /start.sh
 COPY ./template /template
 
