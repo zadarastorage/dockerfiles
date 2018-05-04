@@ -1,0 +1,9 @@
+version: '2'
+
+services:
+  squidservice:
+    build: ./
+    ports:
+      - "3128:3128"
+    environment:
+      CUSTOM_MATCH: "${CUSTOM_MATCH}"
