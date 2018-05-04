@@ -3,6 +3,7 @@ version: '2'
 services:
   squidservice:
     build: ./
+    restart: always
     ports:
       - "3128:3128"
     environment:
