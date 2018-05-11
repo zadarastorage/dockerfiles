@@ -5,7 +5,7 @@ services:
     build: ./
     restart: "no"
     devices:
-      - "/dev/loop0:/dev/target"
+      - "/dev/<disk>:/dev/target"
     environment:
       AWS_ACCESS_KEY_ID: <AWS_ACCESS_KEY>
       AWS_SECRET_ACCESS_KEY: <AWS_SECRET_ACCESS_KEY>
