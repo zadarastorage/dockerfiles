@@ -1,0 +1,16 @@
+version: '2'
+
+services:
+  app:
+    build: ./
+    restart: "no"
+    devices:
+      - "/dev/loop0:/dev/target"
+    environment:
+      AWS_ACCESS_KEY_ID: <AWS_ACCESS_KEY>
+      AWS_SECRET_ACCESS_KEY: <AWS_SECRET_ACCESS_KEY>
+      AWS_REGION: us-east-1
+      BUCKET: <BUCKET_NAME>
+      SNAPSHOT_PATH: <SNAPSHOT_DIRECTORY_PATH>
+      #SNAPSHOT_PATH: aws3.00000000000000000000000000000000/test.vsa-00000001/volume_name.volume-00000001/2018-01-01T00:00:01+0000_snap-00000001
+      TARGET_PATH: /dev/target
