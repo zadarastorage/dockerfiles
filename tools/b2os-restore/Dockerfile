@@ -11,5 +11,5 @@ RUN apt-get update && \
     dpkg -i --force-overwrite /tmp/*.deb && \
     rm -rf /var/cache/apt/archives /var/lib/apt/lists/* /tmp/*.deb
 
-CMD ["sleep","60m"]
-#CMD ["bash","-c","zadara_obs restore --bucket=${BUCKET} --region=${AWS_REGION} --access_key=${AWS_ACCESS_KEY_ID} --secret_key=${AWS_SECRET_ACCESS_KEY} --snapshot=${SNAPSHOT_PATH} --device=${TARGET_PATH} --end_point=${ENDPOINT}"]
+#CMD ["sleep","60m"]
+CMD ["bash","-c","zadara_obs restore --bucket=${BUCKET} --region=${AWS_REGION} --access_key=${AWS_ACCESS_KEY_ID} --secret_key=${AWS_SECRET_ACCESS_KEY} --snapshot=${SNAPSHOT_PATH} --device=${TARGET_PATH} --end_point=${ENDPOINT}"]
