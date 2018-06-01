@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+  test:
+    build: ./
+    volumes:
+      - "./:/debug"
+    ports:
+      - "8022:22"
+    environment:
+      http_proxy:
+      https_proxy:
+      CRON_SERVICE: "enabled"
+      VPSA_ACCESS_KEY: ""
