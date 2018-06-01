@@ -24,7 +24,7 @@ ENCRYPTION_TYPES=${ENCRYPTION_TYPES:-rc4-hmac des3-hmac-sha1 des-cbc-crc arcfour
 
 NAME_RESOLVE_ORDER=${NAME_RESOLVE_ORDER:-host bcast}
 
-SERVER_STRING=${SERVER_STRING:-Samba Server Version %v}
+SERVER_STRING=${SERVER_STRING:-Samba Version %v}
 SECURITY=${SECURITY:-ads}
 REALM=${REALM:-${DOMAIN_NAME^^}}
 PASSWORD_SERVER=${PASSWORD_SERVER:-${DOMAIN_NAME,,}}
@@ -177,6 +177,7 @@ crudini --set $SAMBA_CONF global "guest account" "$GUEST_USERNAME"
 
 crudini --set $SAMBA_CONF global "workgroup" "$WORKGROUP"
 crudini --set $SAMBA_CONF global "server string" "$SERVER_STRING"
+crudini --set $SAMBA_CONF global "netbios name" "$HOSTNAME"
 
 # Add the IPs / subnets allowed acces to the server in general.
 crudini --set $SAMBA_CONF global "hosts allow" "$HOSTS_ALLOW"
