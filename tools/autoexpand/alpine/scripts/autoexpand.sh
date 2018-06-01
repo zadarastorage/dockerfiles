@@ -54,7 +54,7 @@ function vpsaAPI {
 	if [ -n "${PAYLOAD}" ]; then
 		CMD="${CMD} -d '${PAYLOAD}'"
 	fi
-	CMD="${CMD} https://${VPSA_IP}/api/${URI}"
+	CMD="${CMD} 'https://${VPSA_IP}/api/${URI}'"
 #	(>&2 echo ${CMD} )
 	eval ${CMD} | jq -c --raw-output '.'
 }
@@ -79,7 +79,7 @@ VOLUME_FREE_PERCENT=${VOLUME_FREE_PERCENT}
 VOLUME_FREE_GB=${VOLUME_FREE_GB}
 VOLUME_EXPAND_CRITERIA=${VOLUME_EXPAND_CRITERIA}
 VOLUME_EXPAND_METHOD=${VOLUME_EXPAND_METHOD}"
-		PAYLOAD=$(echo '{}' | jq -c --raw-output --arg subject "${SUBJECT}" --arg desc "${DESCRIPTION}" '{subject:$subject,description:$desc}')
+		PAYLOAD=$(jq -n -c --raw-output --arg subject "${SUBJECT}" --arg desc "${DESCRIPTION}" '{subject:$subject,description:$desc}')
 		vpsaAPI -m POST -p "${PAYLOAD}" -u "tickets.json"
 	fi
 }
@@ -122,7 +122,7 @@ function expandVolume {
 		fi
 	fi
 	if [ -n "${INCREASE_BY_GB}" -a ${INCREASE_BY_GB} -gt 0 ]; then
-		PAYLOAD=$(echo "{}"|jq -c --raw-output --arg increase "${INCREASE_BY_GB}G" '.capacity=$increase')
+		PAYLOAD=$(jq -n -c --raw-output --arg increase "${INCREASE_BY_GB}G" '.capacity=$increase')
 		vpsaAPI -m 'post' -u "volumes/${VOLUME_ID}/expand.json" -p "${PAYLOAD}"
 		sleep 1s
 		generateTicket "${VOLUME_ID}" "${VOLUME_NAME}" "${SIZE_GB}" "${FREE_GB}" "${INCREASE_BY_GB}"
