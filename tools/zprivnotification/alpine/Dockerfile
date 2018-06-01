@@ -1,7 +1,7 @@
 FROM zadara/service-cron:alpine
 ENV SSH_SERVER="disabled"
 
-LABEL description="zprivnotification is for monitoring VPSA logs and generating a ticket on escalated privileged access events."
+LABEL description="zprivnotification for monitoring VPSA logs and generating a ticket on escalated privileged access events."
 
 RUN apk --no-cache add jq
 
