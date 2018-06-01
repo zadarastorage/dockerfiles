@@ -6,7 +6,7 @@
 
 GUEST_USERNAME=${GUEST_USERNAME:-nobody}
 GUEST_PASSWORD=${GUEST_PASSWORD:-zadara}
-SHARE_ROOT=${SHARE_ROOT:-/mnt}
+SHARE_ROOT=${SHARE_ROOT:-/export}
 
 TZ=${TZ:-Etc/UTC}
 # Update loopback entry
