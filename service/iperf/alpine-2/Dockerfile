@@ -5,7 +5,8 @@ LABEL description="iperf container"
 
 RUN apk --no-cache add iperf
 
-EXPOSE 5001
+EXPOSE 5001/tcp
+EXPOSE 5001/udp
 
 ENV IPERF_PORT=5001
 
