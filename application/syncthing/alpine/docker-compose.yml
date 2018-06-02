@@ -1,0 +1,18 @@
+version: '2'
+
+services:
+  test:
+    build: ./
+    volumes:
+      - "/tmp/export:/export"
+      - "/tmp/conf:/conf"
+    ports:
+      - "8022:22"
+      - "8384:8384"
+    environment:
+      http_proxy:
+      https_proxy:
+      SSH_SERVER: "enabled"
+      SSH_USER: root
+      SSH_PASSWORD: zadara
+      VPSA_ACCESS_KEY: ""
