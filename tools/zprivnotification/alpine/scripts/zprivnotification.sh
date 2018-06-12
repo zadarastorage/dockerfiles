@@ -83,6 +83,7 @@ fi
 echo '[]' > "${LOCKDIR}/activity.tmp"
 SORT=$(jq -n -c --raw-output '[{"property":"msg-id","direction":"ASC"}]|@uri')
 FIRST_ID=$(vpsaAPI -m 'get' -u "messages.json?limit=1&sort=${SORT}&start=0" | jq -c --raw-output '.response.messages[0].msg_id')
+FIRST_ID=$(dc "${FIRST_ID} 1 - p")
 CONT=1
 while [ ${CONT} -eq 1 ]; do
 #	URI="messages.json?limit=${LOG_LIMIT}&sort=${SORT}&start=${LAST_ID}&attr_key=controller" ## Start # is applied to the idx after the filter, not the msg_id... >.<
@@ -107,7 +108,7 @@ while [ ${CONT} -eq 1 ]; do
 done
 # Submit support ticket listing out when 2023 was opened and by who
 if [ $(jq 'length' "${LOCKDIR}/activity.tmp") -ne 0 ]; then
-	jq '.' "${LOCKDIR}/activity.tmp"
+#	jq '.' "${LOCKDIR}/activity.tmp"
 	generateTicket
 fi
 # Log the LAST_ID and unixtime to the lastrun file
