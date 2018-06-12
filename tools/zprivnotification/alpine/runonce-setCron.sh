@@ -12,3 +12,4 @@ else
 	fi
 	ln -s /scripts/zprivnotification.sh /etc/periodic/5min/zprivnotification
 fi
+/scripts/zprivnotification.sh
