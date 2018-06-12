@@ -10,4 +10,5 @@ ENV VPSA_ACCESS_KEY="" \
 
 COPY ./scripts /scripts
 COPY ./runonce-storeenv.sh /runonce/000-storeenv.sh
-COPY ./runonce-setCron.sh /runonce/001-setCron.sh
+COPY ./runonce-clearlocks.sh /runone/001-clearlocks.sh
+COPY ./runonce-setCron.sh /runonce/002-setCron.sh

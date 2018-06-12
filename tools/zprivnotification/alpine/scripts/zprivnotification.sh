@@ -4,8 +4,12 @@ source /tmp/env.sh
 LOCKDIR="/dev/shm"
 # Exit if another instance is still running
 #exec {lock_fd}>${LOCKDIR}/zprivnotification.lock || exit 1
-flock -n -x "${LOCKDIR}/zprivnotification.lock"
+#flock -n -x "${LOCKDIR}/zprivnotification.lock"
 # Exit if VPSA_ACCESS_KEY is empty
+if [ -e "${LOCKDIR}/zprivnotification.lock" ]; then
+	exit 1
+fi
+touch "${LOCKDIR}/zprivnotification.lock"
 if [ -z "${VPSA_ACCESS_KEY}" ]; then
 	exit 1
 fi
@@ -77,11 +81,13 @@ fi
 
 # Start the scanning loop, construct history of events
 echo '[]' > "${LOCKDIR}/activity.tmp"
+SORT=$(jq -n -c --raw-output '[{"property":"msg-id","direction":"ASC"}]|@uri')
+FIRST_ID=$(vpsaAPI -m 'get' -u "messages.json?limit=1&sort=${SORT}&start=0" | jq -c --raw-output '.response.messages[0].msg_id')
 CONT=1
 while [ ${CONT} -eq 1 ]; do
-	SORT=$(jq -n -c --raw-output '[{"property":"msg-id","direction":"ASC"}]|@uri')
 #	URI="messages.json?limit=${LOG_LIMIT}&sort=${SORT}&start=${LAST_ID}&attr_key=controller" ## Start # is applied to the idx after the filter, not the msg_id... >.<
-	URI="messages.json?limit=${LOG_LIMIT}&sort=${SORT}&start=${LAST_ID}"
+	OFFSET=$(dc "${LAST_ID} ${FIRST_ID} - p")
+	URI="messages.json?limit=${LOG_LIMIT}&sort=${SORT}&start=${OFFSET}"
 	RESULTS=$(vpsaAPI -m 'get' -u "${URI}" | jq -c --raw-output '.response.messages')
 	if [ "${RESULTS}" != "null" ] && [ -n "${RESULTS}" ]; then
 		COUNT=$(echo "${RESULTS}" | jq -c --raw-output 'length')
@@ -107,4 +113,5 @@ fi
 # Log the LAST_ID and unixtime to the lastrun file
 echo "${LAST_ID}" > "${LAST_TMP}"
 IFS=$OIFS
-flock -u "${LOCKDIR}/zprivnotification.lock"
+#flock -u "${LOCKDIR}/zprivnotification.lock"
+rm "${LOCKDIR}/zprivnotification.lock"
