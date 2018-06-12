@@ -88,6 +88,9 @@ CONT=1
 while [ ${CONT} -eq 1 ]; do
 #	URI="messages.json?limit=${LOG_LIMIT}&sort=${SORT}&start=${LAST_ID}&attr_key=controller" ## Start # is applied to the idx after the filter, not the msg_id... >.<
 	OFFSET=$(dc "${LAST_ID} ${FIRST_ID} - p")
+	if [ "${OFFSET:0:1}" == "-" ]; then
+		OFFSET=0
+	fi
 	URI="messages.json?limit=${LOG_LIMIT}&sort=${SORT}&start=${OFFSET}"
 	RESULTS=$(vpsaAPI -m 'get' -u "${URI}" | jq -c --raw-output '.response.messages')
 	if [ "${RESULTS}" != "null" ] && [ -n "${RESULTS}" ]; then
