@@ -20,6 +20,11 @@ if os.environ['DRY_RUN'].lower() == 'false' or os.environ['DRY_RUN'].lower() == 
 else:
     dry_run = True
 
+if os.environ['CASE_SENSITIVE_PATTERNS'] == 'false' or os.environ['CASE_SENSITIVE_PATTERNS'] == 'disabled':
+    case_sensitive_patterns = False
+else:
+    case_sensitive_patterns = True
+
 
 # get timestamp for logs
 def get_timestamp():
@@ -130,7 +135,11 @@ def loop_directories(config):
                 retention_matches = 0
                 for pattern in config[directory]:
                     expiration = time.time() - 60 * 60 * 24 * int(pattern['retention_days'])
-                    if fnmatch.fnmatch(name.lower(), pattern['pattern'].lower()):
+                    if case_sensitive_patterns:
+                        pattern_match = fnmatch.fnmatch(name, pattern['pattern'])
+                    else:
+                        pattern_match = fnmatch.fnmatch(name.lower(), pattern['pattern'].lower())
+                    if pattern_match:
                         pattern_matches += 1
                         if file_mtime < expiration:
                             retention_matches += 1

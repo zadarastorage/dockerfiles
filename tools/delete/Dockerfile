@@ -30,6 +30,7 @@ ENV KEEP_ALIVE=disabled
 ENV SSH=disabled
 ENV STARTUP_RUN=enabled
 ENV DRY_RUN=enabled
+ENV CASE_SENSITIVE_PATTERNS=disabled
 
 COPY Dockerfile /app/
 COPY start.sh /app/
