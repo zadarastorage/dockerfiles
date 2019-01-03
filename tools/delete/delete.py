@@ -126,13 +126,15 @@ def loop_directories(config):
             for name in files:
                 file_path = os.path.join(root, name)
                 file_mtime = os.stat(file_path).st_mtime
-                matches = 0
+                pattern_matches = 0
+                retention_matches = 0
                 for pattern in config[directory]:
                     expiration = time.time() - 60 * 60 * 24 * int(pattern['retention_days'])
-                    if fnmatch.fnmatch(name, pattern['pattern']):
+                    if fnmatch.fnmatch(name.lower(), pattern['pattern'].lower()):
+                        pattern_matches += 1
                         if file_mtime < expiration:
-                            matches += 1
-                if matches > 0:
+                            retention_matches += 1
+                if pattern_matches > 0 and pattern_matches == retention_matches:
                     log_and_delete(file_path, file_mtime)
                     found_files += 1
         print_and_log('{} files found and deleted'.format(found_files))
