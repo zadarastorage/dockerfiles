@@ -14,6 +14,15 @@ The path to the config file is set by the CONFIG_PATH environment variable.  Con
 | pattern | *.log | Pattern to test file names against, supports wildcards.  See https://docs.python.org/3.7/library/fnmatch.html for more info.
 | retention_days | 30 | Number of days to retain files matching the pattern
 
+#### Example
+
+```
+root,pattern,retention_days
+/export/data/logs,*.log,30
+/export/data/logs,*.txt,45
+/export/data/share,*.csv,180
+```
+
 
 ### Environment Variables
 | | | | | |
@@ -21,6 +30,7 @@ The path to the config file is set by the CONFIG_PATH environment variable.  Con
 | **Name** | **Acceptable Values** | **Default Value** | **Required** | **Purpose** |
 | CONFIG_PATH | valid path to config csv file | None | Yes | Determines which config file to use | 
 | LOG_BASE_DIR | valid path to base log directory | None | Yes | Determines where to store logs | 
+| CASE_SENSITIVE_PATTERNS | true, false, enabled, disabled | disabled | No | Determines if pattern matching is case sensitive or not | 
 | CRON | true, false, enabled, disabled | enabled | No | Determines if cron service is enabled | 
 | CRON_TIMING | valid crontab timing | 0 0 * * * | No | If cron service enabled, determines the timing of the cron job |
 | DRY_RUN | true, false, enabled, disabled | enabled | No | Determines if data will be deleted or not |
