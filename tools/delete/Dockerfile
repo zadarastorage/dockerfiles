@@ -21,16 +21,15 @@ EXPOSE 22
 
 RUN pip install joblib --no-cache-dir
 
-ENV PYTHONUNBUFFERED=0
-ENV TERM=xterm
-
-ENV CRON=enabled
-ENV CRON_TIMING="0 0 * * *"
-ENV KEEP_ALIVE=disabled
-ENV SSH=disabled
-ENV STARTUP_RUN=enabled
-ENV DRY_RUN=enabled
-ENV CASE_SENSITIVE_PATTERNS=disabled
+ENV PYTHONUNBUFFERED=0 \
+    TERM=xterm \
+    CRON=enabled \
+    CRON_TIMING="0 0 * * *" \
+    KEEP_ALIVE=disabled \
+    SSH=disabled \
+    STARTUP_RUN=enabled \
+    DRY_RUN=enabled \
+    CASE_SENSITIVE_PATTERNS=disabled
 
 COPY Dockerfile /app/
 COPY start.sh /app/
