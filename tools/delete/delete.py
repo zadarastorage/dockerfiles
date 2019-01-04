@@ -20,7 +20,8 @@ if os.environ['DRY_RUN'].lower() == 'false' or os.environ['DRY_RUN'].lower() == 
 else:
     dry_run = True
 
-if os.environ['CASE_SENSITIVE_PATTERNS'] == 'false' or os.environ['CASE_SENSITIVE_PATTERNS'] == 'disabled':
+if os.environ['CASE_SENSITIVE_PATTERNS'].lower() == 'false' \
+        or os.environ['CASE_SENSITIVE_PATTERNS'].lower() == 'disabled':
     case_sensitive_patterns = False
 else:
     case_sensitive_patterns = True
@@ -57,7 +58,7 @@ def check_create_pid_file(pid_file_path):
         if check_pid(int(running_pid)):
             print_and_log("Previous run in progress, exiting")
             exit(1)
-    open(pid_file, 'w').write(pid)
+    open(pid_file_path, 'w').write(pid)
 
 
 # helper function to print and log a message
@@ -149,8 +150,7 @@ def loop_directories(config):
         print_and_log('{} files found and deleted'.format(found_files))
 
 
-if __name__ == '__main__':
-
+def main():
     pid_file = "/dev/shm/removal.pid"
 
     try:
@@ -168,3 +168,7 @@ if __name__ == '__main__':
     finally:
         if os.path.exists(pid_file):
             os.unlink(pid_file)
+
+
+if __name__ == '__main__':
+    main()
