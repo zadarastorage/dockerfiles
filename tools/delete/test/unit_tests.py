@@ -41,7 +41,6 @@ def create_file_set_age(root, path, age_days):
 
 
 def create_testbed():
-
     for file in files:
         create_file_set_age(root, file['path'], file['age'])
 
@@ -49,7 +48,7 @@ def create_testbed():
 class TestCase(unittest.TestCase):
     def setUp(self):
         create_testbed()
-        os.environ["CONFIG_PATH"] = '/mnt/delete/config.csv'
+        os.environ["CONFIG_PATH"] = 'test_config.csv'
         os.environ["LOG_BASE_DIR"] = '/mnt/delete/logs'
         os.environ["DRY_RUN"] = 'False'
         os.environ["CASE_SENSITIVE_PATTERNS"] = 'False'

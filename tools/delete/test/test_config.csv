@@ -1,0 +1,5 @@
+root,pattern,retention_days
+/mnt/delete/1,*.log,30
+/mnt/delete/1,*CaSe2*.LOG,45
+/mnt/delete/1,TESTCase3*.log,60
+/mnt/delete/2,test*.log,20
