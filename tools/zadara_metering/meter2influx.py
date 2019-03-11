@@ -150,12 +150,25 @@ if dev_type_str == 'io':
 				bucket_names.append(bucket_name)
 
 	table = 'metering_info'
-	fields = 'bucket, '																+ \
-			'ROUND( CAST(num_ios AS REAL) / interval, 3) AS iops, '					+ \
-			'active_ios, io_errors, '												+ \
-			'ROUND( (CAST(bytes AS REAL) / interval) / (1024*1024), 3) AS mbps, '	+ \
-			'ROUND( CAST(total_resp_tm_ms AS REAL) / num_ios, 3) AS latency_ms, '	+ \
-			'max_resp_tm_ms AS max_latency_ms, max_cmd '
+	
+	# >-18.07 has field total_resp_tm_us (microseconds) vs older having total_resp_tm_ms (milliseconds)
+	cursor.execute("""SELECT count(*) FROM sqlite_master where name = 'metering_info' and sql like('%total_resp_tm_ms%')""")
+	ms_count = int(cursor.fetchone()[0])
+	if ms_count > 0:
+		fields = 'bucket, '																+ \
+				'ROUND( CAST(num_ios AS REAL) / interval, 3) AS iops, '					+ \
+				'active_ios, io_errors, '												+ \
+				'ROUND( (CAST(bytes AS REAL) / interval) / (1024*1024), 3) AS mbps, '	+ \
+				'ROUND( CAST(total_resp_tm_ms AS REAL) / num_ios, 3) AS latency_ms, '	+ \
+				'max_resp_tm_ms AS max_latency_ms, max_cmd '
+	else:
+		fields = 'bucket, '																+ \
+				'ROUND( CAST(num_ios AS REAL) / interval, 3) AS iops, '					+ \
+				'active_ios, io_errors, '												+ \
+				'ROUND( (CAST(bytes AS REAL) / interval) / (1024*1024), 3) AS mbps, '	+ \
+				'ROUND(CAST((metering_info.total_resp_tm_us / 1000) AS real) / metering_info.num_ios, 3) AS latency_ms, ' + \
+				'ROUND(CAST((metering_info.max_resp_tm_us / 1000) AS real), 3) AS max_latency_ms, max_cmd '
+
 	for bucket_name in bucket_names:
 		fieldnames.append(bucket_name + '.iops')
 		fieldnames.append(bucket_name + '.active_ios')
@@ -233,15 +246,29 @@ if args.localtime:
 # Build the query depending upon output type
 # query output for InfluxDB, tags first then fields and finally timestamp
 if output_type == 1 and dev_type_str == 'io':
-	query = 'SELECT devices.dev_ext_name, devices.dev_server_name, devices.dev_target_name, io_buckets.bucket_name, dev_types.dev_name, ' +\
-			'ROUND(CAST(metering_info.num_ios AS REAL) / interval, 3) AS iops, ROUND((CAST(metering_info.bytes AS REAL) / interval) / (1024 * 1024), 3) AS mbps, ' +\
-			'ROUND(CAST(metering_info.total_resp_tm_ms AS REAL) / num_ios, 3) AS latency_ms, metering_info.active_ios, metering_info.io_errors, metering_info.max_cmd, ' +\
-			'metering_info.max_resp_tm_ms AS max_latency_ms, metering_info.interval, metering_info.time AS unixtime ' +\
-			'FROM  metering_info INNER JOIN devices ON (metering_info.dev_dbid = devices.dev_dbid) ' +\
-			'INNER JOIN io_buckets ON (devices.dev_type = io_buckets.dev_type) AND (metering_info.bucket = io_buckets.bucket) ' +\
-			'INNER JOIN dev_types ON (devices.dev_type = dev_types.dev_type) AND (dev_types.dev_type = io_buckets.dev_type) ' +\
-			'WHERE  '+ where + ' ' +\
-			'ORDER BY metering_info.time'
+	cursor.execute("""SELECT count(*) FROM sqlite_master where name = 'metering_info' and sql like('%total_resp_tm_ms%')""")
+	ms_count = int(cursor.fetchone()[0])
+	if ms_count > 0:
+		query = 'SELECT devices.dev_ext_name, devices.dev_server_name, devices.dev_target_name, io_buckets.bucket_name, dev_types.dev_name, ' +\
+				'ROUND(CAST(metering_info.num_ios AS REAL) / interval, 3) AS iops, ROUND((CAST(metering_info.bytes AS REAL) / interval) / (1024 * 1024), 3) AS mbps, ' +\
+				'ROUND(CAST(metering_info.total_resp_tm_ms AS REAL) / num_ios, 3) AS latency_ms, metering_info.active_ios, metering_info.io_errors, metering_info.max_cmd, ' +\
+				'metering_info.max_resp_tm_ms AS max_latency_ms, metering_info.interval, metering_info.time AS unixtime ' +\
+				'FROM  metering_info INNER JOIN devices ON (metering_info.dev_dbid = devices.dev_dbid) ' +\
+				'INNER JOIN io_buckets ON (devices.dev_type = io_buckets.dev_type) AND (metering_info.bucket = io_buckets.bucket) ' +\
+				'INNER JOIN dev_types ON (devices.dev_type = dev_types.dev_type) AND (dev_types.dev_type = io_buckets.dev_type) ' +\
+				'WHERE  '+ where + ' ' +\
+				'ORDER BY metering_info.time'
+	else:
+		query = 'SELECT devices.dev_ext_name, devices.dev_server_name, devices.dev_target_name, io_buckets.bucket_name, dev_types.dev_name, ' +\
+				'ROUND(CAST(metering_info.num_ios AS REAL) / interval, 3) AS iops, ROUND((CAST(metering_info.bytes AS REAL) / interval) / (1024 * 1024), 3) AS mbps, ' +\
+				'ROUND(CAST((metering_info.total_resp_tm_us / 1000) AS real) / metering_info.num_ios, 3) AS latency_ms, metering_info.active_ios, metering_info.io_errors, metering_info.max_cmd, ' +\
+				'ROUND(CAST((metering_info.max_resp_tm_us / 1000) AS real), 3) AS max_latency_ms, metering_info.interval, metering_info.time AS unixtime ' +\
+				'FROM  metering_info INNER JOIN devices ON (metering_info.dev_dbid = devices.dev_dbid) ' +\
+				'INNER JOIN io_buckets ON (devices.dev_type = io_buckets.dev_type) AND (metering_info.bucket = io_buckets.bucket) ' +\
+				'INNER JOIN dev_types ON (devices.dev_type = dev_types.dev_type) AND (dev_types.dev_type = io_buckets.dev_type) ' +\
+				'WHERE  '+ where + ' ' +\
+				'ORDER BY metering_info.time'
+	
 	# output in InfluxDB measurement, tag, field, timestamp format as key value sets
 	if args.verbose:
 		print >> sys.stderr, 'Execute main query'
@@ -440,15 +467,29 @@ if output_type == 1 and dev_type_str == 'io':
 
 #query output for Elasticsearch timestamp first, searchable fields them metrics
 elif output_type == 2 and dev_type_str == 'io':
-	query = 'SELECT devices.dev_ext_name, devices.dev_server_name, devices.dev_target_name, io_buckets.bucket_name, dev_types.dev_name, ' +\
-			'ROUND(CAST(metering_info.num_ios AS REAL) / interval, 3) AS iops, ROUND((CAST(metering_info.bytes AS REAL) / interval) / (1024 * 1024), 3) AS mbps, ' +\
-			'ROUND(CAST(metering_info.total_resp_tm_ms AS REAL) / num_ios, 3) AS latency_ms, metering_info.active_ios, metering_info.io_errors, metering_info.max_cmd, ' +\
-			'metering_info.max_resp_tm_ms AS max_latency_ms, metering_info.interval, metering_info.time AS unixtime ' +\
-			'FROM  metering_info INNER JOIN devices ON (metering_info.dev_dbid = devices.dev_dbid) ' +\
-			'INNER JOIN io_buckets ON (devices.dev_type = io_buckets.dev_type) AND (metering_info.bucket = io_buckets.bucket) ' +\
-			'INNER JOIN dev_types ON (devices.dev_type = dev_types.dev_type) AND (dev_types.dev_type = io_buckets.dev_type) ' +\
-			'WHERE  '+ where + ' ' +\
-			'ORDER BY metering_info.time'
+	cursor.execute("""SELECT count(*) FROM sqlite_master where name = 'metering_info' and sql like('%total_resp_tm_ms%')""")
+	ms_count = int(cursor.fetchone()[0])
+	if ms_count > 0:
+		query = 'SELECT devices.dev_ext_name, devices.dev_server_name, devices.dev_target_name, io_buckets.bucket_name, dev_types.dev_name, ' +\
+				'ROUND(CAST(metering_info.num_ios AS REAL) / interval, 3) AS iops, ROUND((CAST(metering_info.bytes AS REAL) / interval) / (1024 * 1024), 3) AS mbps, ' +\
+				'ROUND(CAST(metering_info.total_resp_tm_ms AS REAL) / num_ios, 3) AS latency_ms, metering_info.active_ios, metering_info.io_errors, metering_info.max_cmd, ' +\
+				'metering_info.max_resp_tm_ms AS max_latency_ms, metering_info.interval, metering_info.time AS unixtime ' +\
+				'FROM  metering_info INNER JOIN devices ON (metering_info.dev_dbid = devices.dev_dbid) ' +\
+				'INNER JOIN io_buckets ON (devices.dev_type = io_buckets.dev_type) AND (metering_info.bucket = io_buckets.bucket) ' +\
+				'INNER JOIN dev_types ON (devices.dev_type = dev_types.dev_type) AND (dev_types.dev_type = io_buckets.dev_type) ' +\
+				'WHERE  '+ where + ' ' +\
+				'ORDER BY metering_info.time'
+	else:
+		query = 'SELECT devices.dev_ext_name, devices.dev_server_name, devices.dev_target_name, io_buckets.bucket_name, dev_types.dev_name, ' +\
+				'ROUND(CAST(metering_info.num_ios AS REAL) / interval, 3) AS iops, ROUND((CAST(metering_info.bytes AS REAL) / interval) / (1024 * 1024), 3) AS mbps, ' +\
+				'ROUND(CAST((metering_info.total_resp_tm_us / 1000) AS real) / metering_info.num_ios, 3) AS latency_ms, metering_info.active_ios, metering_info.io_errors, metering_info.max_cmd, ' +\
+				'ROUND(CAST((metering_info.max_resp_tm_us / 1000) AS real), 3) AS max_latency_ms, metering_info.interval, metering_info.time AS unixtime ' +\
+				'FROM  metering_info INNER JOIN devices ON (metering_info.dev_dbid = devices.dev_dbid) ' +\
+				'INNER JOIN io_buckets ON (devices.dev_type = io_buckets.dev_type) AND (metering_info.bucket = io_buckets.bucket) ' +\
+				'INNER JOIN dev_types ON (devices.dev_type = dev_types.dev_type) AND (dev_types.dev_type = io_buckets.dev_type) ' +\
+				'WHERE  '+ where + ' ' +\
+				'ORDER BY metering_info.time'
+
 #guery output for JSON format
 elif output_type == 3 and dev_type_str == 'io':
 #JSON dictionary fields
@@ -461,6 +502,7 @@ elif output_type == 3 and dev_type_str == 'io':
 	for sql_row in cursor:
 		if len(sql_row) > 0:
 			json_row_tags = {}
+			json_row_fields = {}
 			json_row_tags['cloud_id'] = cloud_id
 			json_row_tags['vpsa_id'] =  vpsa_id
 

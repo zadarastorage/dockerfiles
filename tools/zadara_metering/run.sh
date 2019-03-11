@@ -20,7 +20,7 @@ InjectInfluxData() {
     vpsa=${vpsadir%?}
     for influxfile in $(ls -1 ${vpsa}/*.influx); do
       echo "Injecting ${influxfile}"
-      docker run --network=$(basename $(pwd) | tr -d '_' )_default --rm -v $PWD/${influxfile}:/metering.txt influxdb influx -host influxdb -database 'VPSA1' -import -path=/metering.txt -precision='s'
+      docker run --network=zadara_metering_default --rm -v $PWD/${influxfile}:/metering.txt influxdb influx -host influxdb -database 'VPSA1' -import -path=/metering.txt -precision='s'
     done
   done
 }
@@ -74,7 +74,7 @@ ConvertMeteringFiles
 
 # Bring up containers
 echo "Bringing up containers..."
-docker-compose up -d
+docker-compose -p zadara_metering up -d
 
 echo "Waiting for containers..."
 sleep 30

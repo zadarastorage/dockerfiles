@@ -1,6 +1,6 @@
 #!/bin/sh
 
-docker-compose down
+docker-compose -p zadara_metering down
 
 rm -f metering*
 for vpsadir in $(ls -1d */); do
