@@ -1,0 +1,2 @@
+FROM lsiobase/ubuntu:bionic
+COPY s6/ /
