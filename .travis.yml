@@ -1,0 +1,57 @@
+dist: bionic
+language: bash
+services:
+- docker
+# Update Docker
+addons:
+  apt:
+    update: true
+    sources:
+    - sourceline: "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+      key_url: https://download.docker.com/linux/ubuntu/gpg
+    packages:
+    - containerd.io
+    - docker-ce
+    - docker-ce-cli
+    - jq
+    - qemu-user
+# Flag experimental features
+before_install:
+- sudo mkdir -p /etc/docker
+- echo '{"experimental":true}' | sudo tee /etc/docker/daemon.json
+# Add qemu for cross-run containers, just-incase
+before_script:
+- sudo docker run --rm --privileged multiarch/qemu-user-static:register --reset
+- sudo docker run --privileged linuxkit/binfmt:v0.7
+script:
+- docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}" &> /dev/null
+- cd ${TRAVIS_BUILD_DIR}/${CONTAINER}
+- export DOCKERFILE_PATH=Dockerfile.${TAG}
+- export DOCKER_REPO=index.docker.io/${DOCKER_ORG}/${CONTAINER}
+- docker buildx create --name ${CONTAINER}
+- docker buildx use ${CONTAINER}
+- docker buildx inspect --bootstrap
+- if [[ -n "${LATEST}" && "${LATEST}" == "true" ]]; then docker buildx build --platforms "linux/amd64" -t "${DOCKER_ORG}/${CONTAINER}:${TAG}" -t "${DOCKER_ORG}/${CONTAINER}:latest" -f "${DOCKERFILE_PATH}" --push . ; fi
+- if [[ -z "${LATEST}" || "${LATEST}" == "false" ]]; then docker buildx build --platforms "linux/amd64" -t "${DOCKER_ORG}/${CONTAINER}:${TAG}" -f "${DOCKERFILE_PATH}" --push . ; fi
+env:
+  global:
+  - DOCKER_CLI_EXPERIMENTAL=enabled
+  - DOCKER_ORG=zadara
+
+stages:
+- base
+- containers
+matrix:
+  include:
+  - stage: base
+    env: CONTAINER=base-s6 TAG=alpine-3.11
+  - stage: base
+    env: CONTAINER=base-s6 TAG=alpine-3.10
+  - stage: base
+    env: CONTAINER=base-s6 TAG=alpine-3.9
+  - stage: base
+    env: CONTAINER=base-s6 TAG=alpine-3.8
+  - stage: base
+    env: CONTAINER=base-s6 TAG=ubuntu-bionic
+  - stage: base
+    env: CONTAINER=base-s6 TAG=ubuntu-xenial
