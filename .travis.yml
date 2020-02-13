@@ -1,5 +1,6 @@
+os: linux
 dist: bionic
-language: bash
+language: shell
 services:
 - docker
 # Update Docker
@@ -31,8 +32,8 @@ script:
 - docker buildx create --name ${CONTAINER}
 - docker buildx use ${CONTAINER}
 - docker buildx inspect --bootstrap
-- if [[ -n "${LATEST}" && "${LATEST}" == "true" ]]; then docker buildx build --platforms "linux/amd64" -t "${DOCKER_ORG}/${CONTAINER}:${TAG}" -t "${DOCKER_ORG}/${CONTAINER}:latest" -f "${DOCKERFILE_PATH}" --push . ; fi
-- if [[ -z "${LATEST}" || "${LATEST}" == "false" ]]; then docker buildx build --platforms "linux/amd64" -t "${DOCKER_ORG}/${CONTAINER}:${TAG}" -f "${DOCKERFILE_PATH}" --push . ; fi
+- if [[ -n "${LATEST}" && "${LATEST}" == "true" ]]; then docker buildx build --platform "linux/amd64" -t "${DOCKER_ORG}/${CONTAINER}:${TAG}" -t "${DOCKER_ORG}/${CONTAINER}:latest" -f "${DOCKERFILE_PATH}" --push . ; fi
+- if [[ -z "${LATEST}" || "${LATEST}" == "false" ]]; then docker buildx build --platform "linux/amd64" -t "${DOCKER_ORG}/${CONTAINER}:${TAG}" -f "${DOCKERFILE_PATH}" --push . ; fi
 env:
   global:
   - DOCKER_CLI_EXPERIMENTAL=enabled
@@ -41,7 +42,7 @@ env:
 stages:
 - base
 - containers
-matrix:
+jobs:
   include:
   - stage: base
     env: CONTAINER=base-s6 TAG=alpine-3.11
