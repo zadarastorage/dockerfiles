@@ -1,0 +1,2 @@
+FROM lsiobase/ubuntu:xenial
+COPY s6/ /
