@@ -1,0 +1,23 @@
+FROM zadara/base-s6:ubuntu-bionic
+
+LABEL maintainer="Zadara Storage <support@zadarastorage.com>" \
+      vendor="Zadara Storage" \
+      description="Simple SSH Server preloaded with some commonly-used packages"
+
+ENV SSH_USER="root" \
+    SSH_PASSWORD="zadara"
+
+RUN apt-get update && \
+    apt-get install -y \
+      openssh-server \
+      acl attr \
+      rsync curl wget \
+      screen less && \
+    sed -i 's/^PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+    echo 'UseDNS no' >> /etc/ssh/sshd_config && \
+    sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd && \
+    apt-get clean
+
+EXPOSE 22
+
+COPY s6/ /

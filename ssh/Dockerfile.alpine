@@ -1,0 +1,21 @@
+FROM zadara/base-s6:alpine-3.11
+
+LABEL maintainer="Zadara Storage <support@zadarastorage.com>" \
+      vendor="Zadara Storage" \
+      description="Simple SSH Server preloaded with some commonly-used packages"
+
+ENV SSH_USER="root" \
+    SSH_PASSWORD="zadara"
+
+RUN \
+    apk add --no-cache \
+      openssh \
+      acl attr \
+      rsync curl wget \
+      screen && \
+    sed -i 's/^PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+    echo 'UseDNS no' >> /etc/ssh/sshd_config
+
+EXPOSE 22
+
+COPY s6/ /

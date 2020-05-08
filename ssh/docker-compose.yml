@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  ubuntu:
+    build:
+      context: .
+      dockerfile: Dockerfile.ubuntu
+    ports:
+    - "9022:22"
+#    environment:
+#      SSH_USER: "test"
+#      SSH_PASSWORD: "test"
+  alpine:
+    build:
+      context: .
+      dockerfile: Dockerfile.alpine
+    ports:
+    - "9023:22"
+#    environment:
+#      SSH_USER: "test"
+#      SSH_PASSWORD: "test"

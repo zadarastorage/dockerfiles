@@ -44,6 +44,7 @@ stages:
 - containers
 jobs:
   include:
+# Base containers
   - stage: base
     env: CONTAINER=base-s6 TAG=alpine-3.11
   - stage: base
@@ -56,3 +57,8 @@ jobs:
     env: CONTAINER=base-s6 TAG=ubuntu-bionic
   - stage: base
     env: CONTAINER=base-s6 TAG=ubuntu-xenial
+# General containers
+  - stage: container
+    env: CONTAINER=ssh TAG=ubuntu LATEST="true"
+  - stage: container
+    env: CONTAINER=ssh TAG=alpine
