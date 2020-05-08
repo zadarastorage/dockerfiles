@@ -1,0 +1,2 @@
+FROM lsiobase/ubuntu:focal
+COPY s6/ /

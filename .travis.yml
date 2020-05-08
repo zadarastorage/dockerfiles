@@ -54,6 +54,8 @@ jobs:
   - stage: base
     env: CONTAINER=base-s6 TAG=alpine-3.8
   - stage: base
+    env: CONTAINER=base-s6 TAG=ubuntu-focal
+  - stage: base
     env: CONTAINER=base-s6 TAG=ubuntu-bionic
   - stage: base
     env: CONTAINER=base-s6 TAG=ubuntu-xenial

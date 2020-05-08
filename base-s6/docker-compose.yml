@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  ubuntu-focal:
+    build:
+      context: .
+      dockerfile: Dockerfile.ubuntu-focal
+  ubuntu-bionic:
+    build:
+      context: .
+      dockerfile: Dockerfile.ubuntu-bionic
+  ubuntu-xenial:
+    build:
+      context: .
+      dockerfile: Dockerfile.ubuntu-xenial
+  alpine-3.11:
+    build:
+      context: .
+      dockerfile: Dockerfile.alpine-3.11
+  alpine-3.10:
+    build:
+      context: .
+      dockerfile: Dockerfile.alpine-3.10
+  alpine-3.9:
+    build:
+      context: .
+      dockerfile: Dockerfile.alpine-3.9
+  alpine-3.8:
+    build:
+      context: .
+      dockerfile: Dockerfile.alpine-3.8
