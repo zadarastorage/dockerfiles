@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  ubuntu:
+    build:
+      context: .
+      dockerfile: Dockerfile.ubuntu
+    volumes:
+      - "./test:/test"
+  alpine:
+    build:
+      context: .
+      dockerfile: Dockerfile.alpine
+

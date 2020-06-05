@@ -1,0 +1,11 @@
+FROM zadara/base-s6:alpine-3.11
+
+LABEL maintainer="Zadara Storage <support@zadarastorage.com>" \
+      vendor="Zadara Storage" \
+      description="FIO Performance filltest container"
+
+RUN \
+    apk add --no-cache \
+      fio
+
+COPY s6/ /

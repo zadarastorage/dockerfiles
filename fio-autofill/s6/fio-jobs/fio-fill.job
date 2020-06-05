@@ -1,0 +1,13 @@
+; fio-fill.job for fiotest
+
+[global]
+name=fio-fill
+rw=write
+bs=1M
+direct=1
+numjobs=1
+
+[fill]
+fill_device=1
+ioengine=libaio
+iodepth=64

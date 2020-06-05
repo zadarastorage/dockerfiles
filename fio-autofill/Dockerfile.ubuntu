@@ -1,0 +1,12 @@
+FROM zadara/base-s6:ubuntu-bionic
+
+LABEL maintainer="Zadara Storage <support@zadarastorage.com>" \
+      vendor="Zadara Storage" \
+      description="FIO Performance filltest container"
+
+RUN apt-get update && \
+    apt-get install -y \
+      fio && \
+    apt-get clean
+
+COPY s6/ /

@@ -66,3 +66,7 @@ jobs:
     env: CONTAINER=ssh TAG=ubuntu LATEST="true"
   - stage: container
     env: CONTAINER=ssh TAG=alpine
+  - stage: container
+    env: CONTAINER=fio-autofill TAG=alpine LATEST="true"
+  - stage: container
+    env: CONTAINER=fio-autofill TAG=ubuntu
