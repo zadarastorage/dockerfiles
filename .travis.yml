@@ -46,6 +46,8 @@ jobs:
   include:
 # Base containers
   - stage: base
+    env: CONTAINER=base-s6 TAG=alpine-3.12
+  - stage: base
     env: CONTAINER=base-s6 TAG=alpine-3.11
   - stage: base
     env: CONTAINER=base-s6 TAG=alpine-3.10
