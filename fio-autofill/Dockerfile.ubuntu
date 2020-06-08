@@ -1,4 +1,4 @@
-FROM zadara/base-s6:ubuntu-bionic
+FROM ubuntu:20.04
 
 LABEL maintainer="Zadara Storage <support@zadarastorage.com>" \
       vendor="Zadara Storage" \
@@ -9,4 +9,7 @@ RUN apt-get update && \
       fio && \
     apt-get clean
 
-COPY s6/ /
+COPY fio-fill.job /fio-fill.job
+
+ENTRYPOINT ["/bin/sh"]
+CMD ["-c","/usr/bin/fio fio-fill.job --filename $(mount | awk '/xfs/{f=$3;print f}' | sed 's@$@/fill@g' | paste -sd ':' -)"]

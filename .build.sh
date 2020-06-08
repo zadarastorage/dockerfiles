@@ -13,6 +13,16 @@ if [[ ${EXIT} -eq 1 ]]; then
 fi
 OPWD=$(pwd)
 
+# Exit function
+exit_on_error() {
+    exit_code=$1
+    last_command=${@:2}
+    if [ $exit_code -ne 0 ]; then
+        >&2 echo "\"${last_command}\" command failed with exit code ${exit_code}."
+        exit $exit_code
+    fi
+}
+
 # Construct docker-compose build file from dockerfiles
 cd ${CONTAINER}
 COMPOSE='{"version": "3"}'
@@ -28,8 +38,10 @@ cat compose-build.yml
 
 # Build all documented containers
 docker-compose -f compose-build.yml build
+exit_on_error $? !!
 # Push all documented containers
 docker-compose -f compose-build.yml push
+exit_on_error $? !!
 
 rm compose-build.yml
 cd ${OPWD}

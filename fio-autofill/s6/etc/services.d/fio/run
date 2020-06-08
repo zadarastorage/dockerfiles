@@ -1,4 +1,0 @@
-#!/usr/bin/with-contenv bash
-FILES=$(mount | awk '/xfs/{f=$3"/fill";print f}' | grep -v '^/\(config\|fio-jobs\)' | paste -sd ":" -)
-FIO_JOB=${FIO_JOB:-fio-fill.job}
-/usr/bin/fio /fio-jobs/${FIO_JOB} --filename ${FILES}
