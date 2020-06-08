@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  2-alpine:
+    build:
+      context: .
+      dockerfile: Dockerfile.2-alpine
+    ports:
+    - "5001:5001"
+  3-alpine:
+    build:
+      context: .
+      dockerfile: Dockerfile.3-alpine
+    ports:
+    - "5201:5201"

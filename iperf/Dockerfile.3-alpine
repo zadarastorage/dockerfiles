@@ -1,0 +1,16 @@
+FROM alpine:3.12
+
+LABEL maintainer="Zadara Storage <support@zadarastorage.com>" \
+      vendor="Zadara Storage" \
+      description="iperf3 throughput testing container"
+
+RUN \
+    apk add --no-cache \
+      iperf3
+
+# iperf3 ports
+EXPOSE 5201/tcp
+EXPOSE 5201/udp
+
+ENTRYPOINT ["/usr/bin/iperf3"]
+CMD ["-s","-p","5201"]

@@ -20,20 +20,24 @@ addons:
 before_install:
 - sudo mkdir -p /etc/docker
 - echo '{"experimental":true}' | sudo tee /etc/docker/daemon.json
-# Add qemu for cross-run containers, just-incase
-before_script:
-- sudo docker run --rm --privileged multiarch/qemu-user-static:register --reset
-- sudo docker run --privileged linuxkit/binfmt:v0.7
+# Update docker-compose
+- sudo rm /usr/local/bin/docker-compose
+- curl -L https://github.com/docker/compose/releases/download/1.26.0/docker-compose-`uname -s`-`uname -m` > docker-compose
+- chmod +x docker-compose
+- sudo mv docker-compose /usr/local/bin
+# Add yq
+- pip install yq
 script:
 - docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}" &> /dev/null
-- cd ${TRAVIS_BUILD_DIR}/${CONTAINER}
-- export DOCKERFILE_PATH=Dockerfile.${TAG}
-- export DOCKER_REPO=index.docker.io/${DOCKER_ORG}/${CONTAINER}
-- docker buildx create --name ${CONTAINER}
-- docker buildx use ${CONTAINER}
-- docker buildx inspect --bootstrap
-- if [[ -n "${LATEST}" && "${LATEST}" == "true" ]]; then docker buildx build --platform "linux/amd64" -t "${DOCKER_ORG}/${CONTAINER}:${TAG}" -t "${DOCKER_ORG}/${CONTAINER}:latest" -f "${DOCKERFILE_PATH}" --push . ; fi
-- if [[ -z "${LATEST}" || "${LATEST}" == "false" ]]; then docker buildx build --platform "linux/amd64" -t "${DOCKER_ORG}/${CONTAINER}:${TAG}" -f "${DOCKERFILE_PATH}" --push . ; fi
+- bash .build.sh
+#- cd ${TRAVIS_BUILD_DIR}/${CONTAINER}
+#- export DOCKERFILE_PATH=Dockerfile.${TAG}
+#- export DOCKER_REPO=index.docker.io/${DOCKER_ORG}/${CONTAINER}
+#- docker buildx create --name ${CONTAINER}
+#- docker buildx use ${CONTAINER}
+#- docker buildx inspect --bootstrap
+#- if [[ -n "${LATEST}" && "${LATEST}" == "true" ]]; then docker buildx build --platform "linux/amd64" -t "${DOCKER_ORG}/${CONTAINER}:${TAG}" -t "${DOCKER_ORG}/${CONTAINER}:latest" -f "${DOCKERFILE_PATH}" --push . ; fi
+#- if [[ -z "${LATEST}" || "${LATEST}" == "false" ]]; then docker buildx build --platform "linux/amd64" -t "${DOCKER_ORG}/${CONTAINER}:${TAG}" -f "${DOCKERFILE_PATH}" --push . ; fi
 env:
   global:
   - DOCKER_CLI_EXPERIMENTAL=enabled
@@ -44,29 +48,13 @@ stages:
 - containers
 jobs:
   include:
-# Base containers
+# Root containers
   - stage: base
-    env: CONTAINER=base-s6 TAG=alpine-3.12
-  - stage: base
-    env: CONTAINER=base-s6 TAG=alpine-3.11
-  - stage: base
-    env: CONTAINER=base-s6 TAG=alpine-3.10
-  - stage: base
-    env: CONTAINER=base-s6 TAG=alpine-3.9
-  - stage: base
-    env: CONTAINER=base-s6 TAG=alpine-3.8
-  - stage: base
-    env: CONTAINER=base-s6 TAG=ubuntu-focal
-  - stage: base
-    env: CONTAINER=base-s6 TAG=ubuntu-bionic
-  - stage: base
-    env: CONTAINER=base-s6 TAG=ubuntu-xenial
-# General containers
+    env: CONTAINER=base-s6
+# Purpose containers
   - stage: container
-    env: CONTAINER=ssh TAG=ubuntu LATEST="true"
+    env: CONTAINER=ssh LATEST="ubuntu"
   - stage: container
-    env: CONTAINER=ssh TAG=alpine
+    env: CONTAINER=fio-autofill LATEST="alpine"
   - stage: container
-    env: CONTAINER=fio-autofill TAG=alpine LATEST="true"
-  - stage: container
-    env: CONTAINER=fio-autofill TAG=ubuntu
+    env: CONTAINER=iperf LATEST="3-alpine"
