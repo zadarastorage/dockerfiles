@@ -45,16 +45,19 @@ env:
 
 stages:
 - base
-- containers
+- standard
 jobs:
   include:
 # Root containers
   - stage: base
     env: CONTAINER=base-s6
+
 # Purpose containers
-  - stage: container
+  - stage: standard
     env: CONTAINER=ssh LATEST="ubuntu"
-  - stage: container
+  - stage: standard
     env: CONTAINER=fio-autofill LATEST="alpine"
-  - stage: container
+  - stage: standard
     env: CONTAINER=iperf LATEST="3-alpine"
+  - stage: standard
+    env: CONTAINER=crond

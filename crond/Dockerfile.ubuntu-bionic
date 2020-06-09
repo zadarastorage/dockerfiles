@@ -1,0 +1,9 @@
+FROM zadara/base-s6:ubuntu-bionic
+
+RUN apt-get update && \
+    apt-get install -y \
+      busybox-static && \
+    ln -s /bin/busybox /usr/sbin/crond && \
+    apt-get clean
+
+COPY s6/ /
