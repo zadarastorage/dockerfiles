@@ -13,6 +13,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.ubuntu-xenial
+  alpine-3.12:
+    build:
+      context: .
+      dockerfile: Dockerfile.alpine-3.12
   alpine-3.11:
     build:
       context: .

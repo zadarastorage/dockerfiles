@@ -1,2 +1,4 @@
 FROM lsiobase/ubuntu:xenial
+LABEL maintainer="Zadara Storage <support@zadarastorage.com>" \
+      vendor="Zadara Storage"
 COPY s6/ /
