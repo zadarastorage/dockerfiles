@@ -31,39 +31,6 @@ function isEmpty {
 	return 0
 }
 
-# Determine current active/standby state
-CONTROLLERS=""
-VC_ACTIVE=""
-VC_STANDBY=""
-VC_ACTIVE_TIME=""
-
-# Retry incase controller state is still syncronizing
-while isEmpty "${CONTROLLERS}" || isEmpty "${VC_ACTIVE}" || isEmpty "${VC_STANDBY}" || isEmpty "${VC_ACTIVE_TIME}"; do
-	CONTROLLERS=$(${vcli} --token "${VPSA_TOKEN}" --method "get" --uri "vcontrollers.json" | ${jq_raw} '.response.vcontrollers')
-	VC_ACTIVE=$(echo ${CONTROLLERS} | ${jq_raw} '.[]|select(.state=="active").name')
-	VC_ACTIVE_TIME=$(echo ${CONTROLLERS} | ${jq_raw} '.[]|select(.state=="active").sod_end_time')
-	VC_STANDBY=$(echo ${CONTROLLERS} | ${jq_raw} '.[]|select(.state=="standby").name')
-	if isEmpty "${VC_ACTIVE}" || isEmpty "${VC_STANDBY}"; then
-		sleep 2s
-	fi
-done
-
-# Determine when container was created
-DOCKER_ID=$(hostname)
-CONTAINER=$(${vcli} --token "${VPSA_TOKEN}" --method "get" --uri "containers.json" | ${jq_raw} --arg id "${DOCKER_ID}" '.response.containers[]|select( .docker_id | startswith($id) )')
-CONTAINER_TIME=$(echo ${CONTAINER} | ${jq_raw} '.created_at')
-
-
-# We're only going to check for unexpected if the current active occurred after container creation
-if ! isEmpty "${CONTAINER_TIME}"; then
-	CONTAINER_UNIX=$(date -d "${CONTAINER_TIME}" +%s)
-	ACTIVE_UNIX=$(date -d "${VC_ACTIVE_TIME}" +%s)
-	if [[ ${CONTAINER_UNIX} -ge ${ACTIVE_UNIX} ]]; then
-		echo "[$0] Active controller was active when the container was created, nothing has changed."
-		exit 0
-	fi
-fi
-
 # Walk backwards from most recent active controller log
 ## Check for "setting to active role was initiated."
 ## Check for SEARCH value
@@ -71,23 +38,27 @@ CONT=1
 COUNT=1
 OFFSET=0
 ACTIVE_MARK=""
+ACTIVE_SOURCE=""
 UNEXPECTED_MARK=""
+UNEXPECTED_SOURCE=""
 UNEXPECTED_MSG=""
 UNEXPECTED_UNIX=""
 while [[ ${CONT} -eq 1 ]]; do
 	SORT=$(jq -n -c --raw-output '[{"property":"msg-id","direction":"DESC"}]|@uri')
-	RESULTS=$(${vcli} --token "${VPSA_TOKEN}" --method "get" --uri "messages.json?limit=${DATA_LIMIT}&start=${OFFSET}&attr_key=controller&attr_value=${VC_ACTIVE}&sort=${SORT}" | ${jq_raw} '.response.messages')
+	RESULTS=$(${vcli} --token "${VPSA_TOKEN}" --method "get" --uri "messages.json?limit=${DATA_LIMIT}&start=${OFFSET}&attr_key=controller&sort=${SORT}" | ${jq_raw} '.response.messages')
 	RESULTS_SIZE=$(echo ${RESULTS} | ${jq_raw} '. | length')
 
 	# Time that controller begun "activation" process
 	if isEmpty "${ACTIVE_MARK}"; then
-		ACTIVE_MARK=$(echo ${RESULTS} | ${jq_raw} --arg needle "setting to active role was initiated." '[.[]|select(.msg_title | contains($needle))][0].msg_id')
+		ACTIVE_MARK=$(echo ${RESULTS} | ${jq_raw} --arg needle "setting to active role was initiated." '[ .[] | select(.msg_title | contains($needle)) ][0].msg_id')
+		ACTIVE_SOURCE=$(echo ${RESULTS} | ${jq_raw} --arg needle "setting to active role was initiated." '[ .[] | select(.msg_title | contains($needle)) ][0].msg_attributes[] | select(.key=="controller").value')
 	fi
 	# Time that search string occurred
 	if isEmpty "${UNEXPECTED_MARK}"; then
-		UNEXPECTED_MARK=$(echo ${RESULTS} | ${jq_raw} --arg needle "${SEARCH}" '[.[]|select(.msg_title | contains($needle))][0].msg_id')
-		UNEXPECTED_MSG=$(echo ${RESULTS} | ${jq_raw} --arg needle "${SEARCH}" '[.[]|select(.msg_title | contains($needle))][0].msg_title')
-		UNEXPECTED_TIME=$(echo ${RESULTS} | ${jq_raw} --arg needle "${SEARCH}" '[.[]|select(.msg_title | contains($needle))][0].msg_time')
+		UNEXPECTED_MARK=$(echo ${RESULTS} | ${jq_raw} --arg needle "${SEARCH}" '[ .[] | select(.msg_title | contains($needle)) ][0].msg_id')
+		UNEXPECTED_SOURCE=$(echo ${RESULTS} | ${jq_raw} --arg needle "${SEARCH}" '[ .[] | select(.msg_title | contains($needle)) ][0].msg_attributes[] | select(.key=="controller").value')
+		UNEXPECTED_MSG=$(echo ${RESULTS} | ${jq_raw} --arg needle "${SEARCH}" '[ .[] | select(.msg_title | contains($needle)) ][0].msg_title')
+		UNEXPECTED_TIME=$(echo ${RESULTS} | ${jq_raw} --arg needle "${SEARCH}" '[ .[] | select(.msg_title | contains($needle)) ][0].msg_time')
 		if ! isEmpty "${UNEXPECTED_TIME}"; then
 			UNEXPECTED_UNIX=$(date -d "${UNEXPECTED_TIME}" +%s)
 		fi
@@ -118,7 +89,15 @@ done
 ## no unexpected events detected
 ## unexpected event predates current activation time
 ## unexpected event is older than cutoff
-if isEmpty "${ACTIVE_MARK}" || isEmpty "${UNEXPECTED_MARK}" || [[ ${UNEXPECTED_MARK} -lt ${ACTIVE_MARK} || ${UNEXPECTED_UNIX} -lt ${CUTOFF_UNIX} ]]; then
+## Current activation is from different controller than unexpected event
+if \
+	isEmpty "${ACTIVE_MARK}" || \
+	isEmpty "${UNEXPECTED_MARK}" || \
+	isEmpty "${ACTIVE_SOURCE}" || \
+	isEmpty "${UNEXPECTED_SOURCE}" || \
+	[[ ${UNEXPECTED_MARK} -lt ${ACTIVE_MARK} ]] || \
+	[[ ${UNEXPECTED_UNIX} -lt ${CUTOFF_UNIX} ]] || \
+	[[ "${ACTIVE_SOURCE}" != "${UNEXPECTED_SOURCE}" ]]; then
 	exit 0
 fi
 
