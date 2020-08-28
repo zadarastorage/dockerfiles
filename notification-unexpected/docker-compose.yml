@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  alpine:
+    build:
+      context: .
+      dockerfile: Dockerfile.alpine
+    volumes:
+    - "./s6/app:/app"
+#    environment:
+#      VPSA_IP: "10.0.0.50"
+#      VPSA_TOKEN: "xxxxxxxxx-xxx"

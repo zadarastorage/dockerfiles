@@ -46,6 +46,7 @@ env:
 stages:
 - base
 - standard
+- derivative
 jobs:
   include:
 # Root containers
@@ -61,3 +62,13 @@ jobs:
     env: CONTAINER=iperf LATEST="3-alpine"
   - stage: standard
     env: CONTAINER=crond
+
+# crond-specifc containers
+  - stage: derivative
+    env: CONTAINER=notification-unexpected LATEST="alpine"
+#  - stage: derivative
+#    env: CONTAINER=crond-autoexpand
+#  - stage: derivative
+#    env: CONTAINER=crond-clamav
+#  - stage: derivative
+#    env: CONTAINER=crond-du_report

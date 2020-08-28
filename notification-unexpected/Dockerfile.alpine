@@ -1,0 +1,6 @@
+FROM zadara/crond:alpine-3.12
+ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2
+RUN \
+    apk add --no-cache \
+      jq
+COPY s6/ /

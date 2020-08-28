@@ -1,0 +1,6 @@
+#!/usr/bin/with-contenv bash
+/app/notification-unexpected.sh
+if [[ $? -ne 0 ]]; then
+	echo "[60-execonce] ERROR DURING STARTUP, EXITING..."
+	exit 1
+fi
