@@ -50,7 +50,7 @@ UNEXPECTED_SOURCE=""
 UNEXPECTED_MSG=""
 UNEXPECTED_UNIX=""
 while [[ ${CONT} -eq 1 ]]; do
-	SORT=$(jq -n -c --raw-output '[{"property":"msg-id","direction":"DESC"}]|@uri')
+	SORT=$(jq -n -c --raw-output '[{"property":"msg-id","direction":"DESC"}] | @uri')
 	RESULTS=$(${vcli} --token "${VPSA_TOKEN}" --method "get" --uri "messages.json?limit=${DATA_LIMIT}&start=${OFFSET}&attr_key=controller&sort=${SORT}" | ${jq_raw} '.response.messages')
 	RESULTS_SIZE=$(echo ${RESULTS} | ${jq_raw} '. | length')
 

@@ -37,5 +37,9 @@ done
 IFS=$OIFS
 
 PAYLOAD=$(echo '{}' | ${jq_raw} -n --arg subject "${TICKET_TITLE}" --arg description "${TICKET_MESSAGE}" '{subject:$subject,description:$description,zsnap:"no"}')
-${vcli} --token "${VPSA_TOKEN}" --method "POST" --uri "tickets.json" --payload "${PAYLOAD}"
-
+RESULT=$(${vcli} --token "${VPSA_TOKEN}" --method "POST" --uri "tickets.json" --payload "${PAYLOAD}")
+STATUS=$(echo ${RESULT} | ${jq_raw} '.response.status')
+if [[ ${STATUS} -ne 0 ]]; then
+	echo "$(date -u) [$0] ERROR: Ticket generation failed, return ${RESULT}"
+	exit 1
+fi
