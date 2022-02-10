@@ -3,7 +3,7 @@ FROM ubuntu:focal
 ## SSH setup
 RUN echo 'root:zadara' | chpasswd
 RUN apt-get update \
-  && apt-get install -y openssh-server \
+  && apt-get install -y openssh-server iproute2 psmisc \
   && mkdir /var/run/sshd \
   && sed -i 's/#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config \
   && echo 'UseDNS no' >> /etc/ssh/sshd_config \

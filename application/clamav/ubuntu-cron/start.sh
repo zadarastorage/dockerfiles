@@ -2,10 +2,11 @@
 printenv | sed -e 's/^\(.*\)$/export \1"/g' -e 's/=/="/' > /env.sh
 chmod +x /env.sh
 
+
 echo -n "" > /etc/cron.d/scan_cron
 
 if [[ -x "/ssh_server.sh" && "${ENABLE_SSH}" != "" ]]; then
-	./ssh_server.sh &
+	/ssh_server.sh &
 fi
 
 if [[ -x "/clamav_daemon.sh" && ("${MODE}" == "" || "${MODE}" == "av") ]]; then
@@ -63,8 +64,6 @@ if [[ -x "/etc/cron.d/scan_cron" ]]; then
 	chmod 0644 /etc/cron.d/scan_cron
 fi
 touch ${LOG_PATH}/finddata.log ${LOG_PATH}/queue_process.log
-#cron && tail -f /var/log/dmesg
-cron
-while true; do
-	sleep 24h
-done
+cron -f &
+
+wait -n

@@ -1,2 +1,3 @@
 #!/usr/bin/env bash
-service ssh start
+#service ssh start
+/usr/sbin/sshd -D

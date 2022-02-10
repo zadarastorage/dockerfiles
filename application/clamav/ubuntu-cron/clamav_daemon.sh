@@ -21,5 +21,6 @@ if [[ "${LOG_PATH}" != "" ]]; then
 	sed -i "s@LogFile .*@LogFile ${LOG_PATH}/clamav-freshclamd.log@" /etc/clamav/freshclam.conf
 fi
 
-service clamav-daemon start
+/usr/sbin/clamd --foreground
+#service clamav-daemon start
 #service clamav-freshclam start
