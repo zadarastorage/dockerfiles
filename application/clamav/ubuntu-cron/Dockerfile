@@ -1,11 +1,11 @@
-FROM ubuntu:trusty
+FROM ubuntu:focal
 
 ## SSH setup
 RUN echo 'root:zadara' | chpasswd
 RUN apt-get update \
   && apt-get install -y openssh-server \
   && mkdir /var/run/sshd \
-  && sed -i 's/PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config \
+  && sed -i 's/#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config \
   && echo 'UseDNS no' >> /etc/ssh/sshd_config \
   && sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
 EXPOSE 22
@@ -13,10 +13,15 @@ EXPOSE 22
 ## Clamav setup
 RUN apt-get update \
   && apt-get install -y clamav-daemon clamav-freshclam curl \
+  && sed -i 's/ReceiveTimeout.*/ReceiveTimeout 60/' /etc/clamav/freshclam.conf \
   && freshclam
 
+## Add cron
+RUN apt-get update \
+  && apt-get install -y cron
+
 # Add jq
-RUN wget https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -O /usr/local/bin/jq && \
+RUN wget --quiet https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -O /usr/local/bin/jq && \
   chmod +x /usr/local/bin/jq
 
 ## Cleanup

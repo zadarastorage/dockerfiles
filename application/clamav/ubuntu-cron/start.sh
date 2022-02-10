@@ -4,11 +4,11 @@ chmod +x /env.sh
 
 echo -n "" > /etc/cron.d/scan_cron
 
-if [[ -x "./ssh_server.sh" && "${ENABLE_SSH}" != "" ]]; then
+if [[ -x "/ssh_server.sh" && "${ENABLE_SSH}" != "" ]]; then
 	./ssh_server.sh &
 fi
 
-if [[ -x "./clamav_daemon.sh" && ("${MODE}" == "" || "${MODE}" == "av") ]]; then
+if [[ -x "/clamav_daemon.sh" && ("${MODE}" == "" || "${MODE}" == "av") ]]; then
 	ARBITRARY_OFFSET=$(( $(date +%s%N) % 60 ))
 	if [[ "${DEF_UPD_FREQ}" == "" ]]; then
 		DEF_UPD_FREQ=24
@@ -17,10 +17,10 @@ if [[ -x "./clamav_daemon.sh" && ("${MODE}" == "" || "${MODE}" == "av") ]]; then
 	REFERENCE="${ARBITRARY_OFFSET} */${HOUR_OFF} * * * root /etc/init.d/clamav-freshclam no-daemon 2>&1" # ARBITRARY MINUTE every HOUR
         echo "${REFERENCE}"
         echo "${REFERENCE}" >> /etc/cron.d/scan_cron
-        ./clamav_daemon.sh &
+        /clamav_daemon.sh &
 fi
 
-if [[ -x "./queue_process.sh" && ("${MODE}" == "" || "${MODE}" == "av") ]]; then
+if [[ -x "/queue_process.sh" && ("${MODE}" == "" || "${MODE}" == "av") ]]; then
 	if [[ "${AV_CRON}" == "" ]]; then
 		ARBITRARY_OFFSET=$(( $(date +%s%N) % 60 ))
 		AV_CRON="${ARBITRARY_OFFSET} * * * *"
@@ -30,7 +30,7 @@ if [[ -x "./queue_process.sh" && ("${MODE}" == "" || "${MODE}" == "av") ]]; then
 	echo "${REFERENCE}" >> /etc/cron.d/scan_cron
 fi
 
-if [[ -x "./find_changes.sh" && ("${MODE}" == "" || "${MODE}" == "find") ]]; then
+if [[ -x "/find_changes.sh" && ("${MODE}" == "" || "${MODE}" == "find") ]]; then
 	if [[ "${FIND_CRON}" == "" ]]; then
 		ARBITRARY_OFFSET=$(( $(date +%s%N) % 60 ))
 		FIND_CRON="${ARBITRARY_OFFSET} * * * *"
@@ -63,5 +63,8 @@ if [[ -x "/etc/cron.d/scan_cron" ]]; then
 	chmod 0644 /etc/cron.d/scan_cron
 fi
 touch ${LOG_PATH}/finddata.log ${LOG_PATH}/queue_process.log
-
-cron && tail -f /var/log/dmesg
+#cron && tail -f /var/log/dmesg
+cron
+while true; do
+	sleep 24h
+done
