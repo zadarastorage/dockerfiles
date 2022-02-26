@@ -1,0 +1,24 @@
+#!/usr/bin/with-contenv bash
+
+CONFIG_DIR="${CONFIG_DIR:-/config}"
+ENV_FILE="${ENV_FILE:-ENV}"
+
+if ([ -d "${CONFIG_DIR}" ] && \
+	[ -e "${CONFIG_DIR}/${ENV_FILE}" ]); then
+	/bin/echo "[zadara-configloader] Importing environment config file at ${CONFIG_DIR}/${ENV_FILE}"
+	for i in $(/bin/printenv | awk -F"=" '!/CONFIG_DIR/ && !/ENV_FILE/{print $1}') ; do
+		unset $i
+	done
+	source "${CONFIG_DIR}/${ENV_FILE}"
+	/bin/s6-dumpenv -- /tmp/container_environment
+	for VAR_FILE in /tmp/container_environment/*; do
+		VAR_NAME="$(/usr/bin/basename "${VAR_FILE}")"
+		if [[ "${VAR_NAME}" != "_" && ! -e "/var/run/s6/container_environment/${VAR_NAME}" ]]; then
+			/bin/cp "${VAR_FILE}" "/var/run/s6/container_environment/${VAR_NAME}"
+		fi
+	done
+	/bin/rm -rf /tmp/container_environment
+	/bin/echo "[zadara-configloader] Environment import complete."
+else
+	/bin/echo "[zadara-configloader] No environment config file at ${CONFIG_DIR}/${ENV_FILE}"
+fi

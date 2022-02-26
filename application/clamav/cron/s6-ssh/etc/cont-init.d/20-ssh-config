@@ -1,0 +1,13 @@
+#!/usr/bin/with-contenv bash
+
+for config_line in 'UseDNS no' 'PermitRootLogin yes'; do
+	grep -qxF "^${config_line}$" /etc/ssh/sshd_config || echo "${config_line}" >> /etc/ssh/sshd_config
+done
+
+if [[ ! -d /run/sshd ]]; then
+	mkdir /run/sshd
+fi
+
+if [[ ! -e /etc/ssh/ssh_host_rsa_key.pub || ! -e /etc/ssh/ssh_host_ecdsa_key.pub || ! -e /etc/ssh/ssh_host_ed25519_key.pub ]]; then
+	ssh-keygen -A -N ''
+fi

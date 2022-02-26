@@ -1,0 +1,11 @@
+#!/bin/execlineb -P
+###!/usr/bin/with-contenv /bin/execlineb
+#importas log_path LOG_PATH
+
+s6-envdir -fn -- /var/run/s6/container_environment
+importas LOG_PATH LOG_PATH
+
+# Redirect stderr to stdout.
+fdmove -c 2 1
+
+/usr/bin/nice -n 19 /usr/sbin/clamd --foreground --config-file=${LOG_PATH}/conf/clamd.conf

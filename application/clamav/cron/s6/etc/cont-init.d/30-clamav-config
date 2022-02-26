@@ -1,0 +1,60 @@
+#!/usr/bin/with-contenv bash
+HOST_ID=$(hostname)
+
+if [[ -z "${CLAM_MODE}" || "${CLAM_MODE}" == "av" || "${CLAM_MODE}" == "both" ]]; then
+	# Ensure socket directory and conf directory exist
+	for x in "/var/run/clamav" "${LOG_PATH}/conf"; do
+		if [[ ! -d "${x}" ]]; then
+			mkdir -p "${x}"
+		fi
+	done
+
+	chown clamav:clamav /var/run/clamav
+
+	# Set some defaults, this is primarily incase there's no config file present in LOG_PATH/conf
+#	sed -i "s@LogFile .*@LogFile ${LOG_PATH}/logs-service/clamd.${HOST_ID}.log@" "/etc/clamav/clamd.conf"
+	sed -i "s@^LogFile @#LogFile @g" "/etc/clamav/clamd.conf"
+	
+	#sed -i "s@UpdateLogFile .*@UpdateLogFile ${LOG_PATH}/logs-service/freshclam.${HOST_ID}.log@" "/etc/clamav/freshclam.conf"
+	sed -i "s@^UpdateLogFile @#UpdateLogFile @g" "/etc/clamav/freshclam.conf"
+	sed -i 's/ReceiveTimeout.*/ReceiveTimeout 60/' "/etc/clamav/freshclam.conf"
+	sed -i 's/ConnectTimeout.*/ConnectTimeout 60/' "/etc/clamav/freshclam.conf"
+	
+	for x in 'clamd.conf' 'freshclam.conf'; do
+		if [[ ! -e "/etc/clamav/${x}.orig" ]]; then
+			cp "/etc/clamav/${x}" "/etc/clamav/${x}.orig"
+		fi
+	done
+
+	for x in 'clamd.conf' 'freshclam.conf'; do
+		# If clamd and freshclam config files do not exist in conf folder, copy "clean" one
+		if [[ ! -e "${LOG_PATH}/conf/${x}" ]]; then
+			cp "/etc/clamav/${x}.orig" "${LOG_PATH}/conf/${x}"
+		fi
+		# If conf files exist on LOG_PATH conf folder, copy them back
+		if [[ -e "${LOG_PATH}/conf/${x}" ]]; then
+			cp "${LOG_PATH}/conf/${x}" "/etc/clamav/${x}"
+		fi
+	done
+
+	# Override clamd and freshclam log paths, inject proxy config if present
+#	sed -i "s@LogFile .*@LogFile ${LOG_PATH}/logs-service/clamd.${HOST_ID}.log@" "/etc/clamav/clamd.conf"
+	sed -i "s@^LogFile @#LogFile @g" "/etc/clamav/clamd.conf"
+	grep -q "^ConcurrentDatabaseReload .*" "/etc/clamav/clamd.conf" && sed -i "s/^ConcurrentDatabaseReload.*/ConcurrentDatabaseReload no/" "/etc/clamav/clamd.conf" || echo "ConcurrentDatabaseReload no" >> "/etc/clamav/clamd.conf"
+
+#	sed -i "s@UpdateLogFile .*@UpdateLogFile ${LOG_PATH}/logs-service/freshclam.${HOST_ID}.log@" "/etc/clamav/freshclam.conf"
+	sed -i "s@^UpdateLogFile @#UpdateLogFile @g" "/etc/clamav/freshclam.conf"
+	if [[ -n "${PROXY_SERVER}" && -n "${PROXY_PORT}" ]]; then
+		grep -q "^HTTPProxyServer .*" "/etc/clamav/freshclam.conf" && sed -i "s/^HTTPProxyServer.*/HTTPProxyServer ${PROXY_SERVER}/" "/etc/clamav/freshclam.conf" || echo "HTTPProxyServer ${PROXY_SERVER}" >> "/etc/clamav/freshclam.conf"
+		grep -q "^HTTPProxyPort .*" "/etc/clamav/freshclam.conf" && sed -i "s/^HTTPProxyPort.*/HTTPProxyPort ${PROXY_PORT}/" "/etc/clamav/freshclam.conf" || echo "HTTPProxyPort ${PROXY_PORT}" >> "/etc/clamav/freshclam.conf"
+	fi
+
+	# Make sure CLAMAV definitions belong to the user defined in clamd.conf
+	USERNAME=$(awk '/^User /{print $NF}' "/etc/clamav/clamd.conf")
+	USERNAME_UID=$(id -u ${USERNAME})
+	USERNAME_GID=$(id -g ${USERNAME})
+	DEFS_PATH=$(awk '/^DatabaseDirectory /{print $NF}' "/etc/clamav/clamd.conf")
+	if [[ -n "${USERNAME}" && -n "${USERNAME_UID}" && -n "${USERNAME_GID}" && -n "${DEFS_PATH}" ]]; then
+		chown --recursive ${USERNAME_UID}:${USERNAME_GID} "${DEFS_PATH}"
+	fi
+fi

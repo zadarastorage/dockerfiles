@@ -1,0 +1,17 @@
+#!/usr/bin/with-contenv bash
+HOST_ID=$(hostname)
+
+cat << EOF > /etc/logrotate.d/zad_clam
+${LOG_PATH}/logs-cron/*.${HOST_ID}.log
+${LOG_PATH}/logs-service/*.${HOST_ID}.log
+{
+	rotate 14
+	daily
+	copytruncate
+	missingok
+	notifempty
+	compress
+	delaycompress
+	size 10M
+}
+EOF

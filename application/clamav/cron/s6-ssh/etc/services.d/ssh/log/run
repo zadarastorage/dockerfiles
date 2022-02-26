@@ -1,0 +1,10 @@
+#!/usr/bin/execlineb -PW
+
+s6-envdir -fn -- /var/run/s6/container_environment
+backtick HOST_ID { hostname }
+importas LOG_PATH LOG_PATH
+importas HOST_ID HOST_ID
+
+# Redirect everything on stdout to the fifo.
+redirfd -a 1 ${LOG_PATH}/logs-service/sshd_svc.${HOST_ID}.log
+s6-format-filter "%s"

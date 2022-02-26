@@ -1,0 +1,7 @@
+#!/usr/bin/with-contenv bash
+
+for repetition in '5min' '10min' '15min' 'hourly' 'daily' 'weekly' 'monthly'; do
+	if [[ ! -d "/etc/periodic/${repetition}" ]]; then
+		mkdir -p "/etc/periodic/${repetition}"
+	fi
+done

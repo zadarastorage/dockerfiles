@@ -37,9 +37,9 @@ avFile(){
 		DATEFILE=$(date +%Y-%m-%d)
 		mkdir -p ${LOGDIR}/${DATEDIR}
 		if [[ "${QUAR_PATH}" != "" ]]; then
-			RESULT=$( (echo -n "$(date) -> " ;clamdscan "${scanobject}" --move="${QUAR_PATH}" --no-summary; echo) | tee -a ${LOGDIR}/${DATEDIR}/${DATEFILE}.log )
+			RESULT=$( (echo -n "$(date) -> " ;clamdscan "${scanobject}" --move="${QUAR_PATH}" --no-summary) | tee -a ${LOGDIR}/${DATEDIR}/${DATEFILE}.log )
 		else
-			RESULT=$( (echo -n "$(date) -> " ;clamdscan "${scanobject}" --no-summary; echo) | tee -a ${LOGDIR}/${DATEDIR}/${DATEFILE}.log )
+			RESULT=$( (echo -n "$(date) -> " ;clamdscan "${scanobject}" --no-summary) | tee -a ${LOGDIR}/${DATEDIR}/${DATEFILE}.log )
 		fi
 		echo "${RESULT}"
 		ISOK=": OK"

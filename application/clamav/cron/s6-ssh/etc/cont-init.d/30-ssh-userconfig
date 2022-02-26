@@ -1,0 +1,21 @@
+#!/usr/bin/with-contenv bash
+if [[ "${SSH_SERVICE}" == "disabled" ]]; then
+	touch /etc/services.d/ssh/down
+	touch /etc/services.d/ssh/log/down
+	exit 0
+else
+	for x in '/etc/services.d/ssh/down' '/etc/services.d/ssh/log/down'; do
+		if [[ -e "${x}" ]]; then
+			rm "${x}"
+		fi
+	done
+fi
+
+if [[ -n "${SSH_USER}" && -n "${SSH_PASSWORD}" ]]; then
+	if [[ "${SSH_USER}" != "root" ]]; then
+		if ! getent passwd ${SSH_USER} > /dev/null 2>&1; then
+			adduser "${SSH_USER}"
+		fi
+	fi
+	echo "${SSH_USER}:${SSH_PASSWORD}" | chpasswd
+fi

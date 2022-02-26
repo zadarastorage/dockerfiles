@@ -1,0 +1,85 @@
+#!/usr/bin/with-contenv bash
+CRON_FILE="/etc/cron.d/zad_clam"
+HOST_ID=$(hostname)
+
+## Functions
+function make_command {
+	SCRIPT="${1}"
+	LOG_FILE="${2}"
+	echo "/usr/bin/nice -n 19 ${SCRIPT} >> ${LOG_FILE} 2>&1"
+}
+
+function set_cron {
+	SCRIPT="${1}"
+	LOG_FILE="${2}"
+	CRON_CFG="${3:-}"
+	if [[ -z "${CRON_CFG}" ]]; then
+		ARBITRARY_OFFSET=$(( $(date +%s%N) % 60 ))
+		CRON_CFG="${ARBITRARY_OFFSET} * * * *"
+	fi
+	COMM=$(make_command "${SCRIPT}" "${LOG_FILE}")
+	echo "${CRON_CFG} root ${COMM}" >> "${CRON_FILE}"
+}
+
+function make_script {
+	SCRIPT="${1}"
+	LOG_FILE="${2}"
+	OUTPUT="${3}"
+	COMM=$(make_command "${SCRIPT}" "${LOG_FILE}")
+cat << EOF > ${OUTPUT}
+#!/bin/bash
+screen -d -m bash -c '${COMM}'
+EOF
+	chmod +x "${OUTPUT}"
+}
+
+
+## Setup
+for x in 'logs-cron' 'logs-service'; do
+	if [[ ! -d "${LOG_PATH}/${x}" ]]; then
+		mkdir "${LOG_PATH}/${x}"
+	fi
+done
+
+# Flush existing cron config
+echo -n "" > "${CRON_FILE}"
+# Cron for manifest creator
+if [[ -z "${CLAM_MODE}" || "${CLAM_MODE}" == "find" || "${CLAM_MODE}" == "both" ]]; then
+	set_cron "/app/find_modified.sh" "${LOG_PATH}/logs-cron/find_modified.${HOST_ID}.log" "${FIND_CRON:-}"
+	make_script "/app/find_modified.sh" "${LOG_PATH}/logs-cron/find_modified.${HOST_ID}.log" "/run_find.sh"
+
+	if [[ -z "${DISABLE_DAILY_REPORT}" ]]; then
+		set_cron "/app/send_report.sh" "${LOG_PATH}/logs-cron/daily_report.${HOST_ID}.log" "5 0 * * *"
+		make_script "/app/send_report.sh" "${LOG_PATH}/logs-cron/daily_report.${HOST_ID}.log" "/run_report_yesterday.sh"
+	fi
+else
+	if [[ -e "/run_find.sh" ]]; then
+		rm /run_find.sh
+	fi
+fi
+
+# Cron for manifest processor, disable clamd service if this is not set as it would be unnecessary
+if [[ -z "${CLAM_MODE}" || "${CLAM_MODE}" == "av" || "${CLAM_MODE}" == "both" ]]; then
+	set_cron "/app/avscan_queue.sh" "${LOG_PATH}/logs-cron/avscan_queue.${HOST_ID}.log" "${SCAN_CRON:-}"
+	make_script "/app/avscan_queue.sh" "${LOG_PATH}/logs-cron/avscan_queue.${HOST_ID}.log" "/run_av.sh"
+
+	if [[ -z "${DISABLE_FRESHCLAM}" ]]; then
+		set_cron "/app/freshclam_cron.sh" "${LOG_PATH}/logs-cron/freshclam_cron.${HOST_ID}.log" "${FRESH_CRON:-0 */12 * * *}"
+		make_script "/app/freshclam_cron.sh" "${LOG_PATH}/logs-cron/freshclam_cron.${HOST_ID}.log" "/run_freshclam.sh"
+	fi
+
+	if [[ -e /etc/services.d/clamd/down ]]; then
+		rm /etc/services.d/clamd/down
+	fi
+	if [[ -e /etc/services.d/clamd/log/down ]]; then
+		rm /etc/services.d/clamd/log/down
+	fi
+else
+	touch /etc/services.d/clamd/down
+	touch /etc/services.d/clamd/log/down
+	for x in '/run_av.sh' '/run_freshclam.sh'; do
+		if [[ -e "${x}" ]]; then
+			rm "${x}"
+		fi
+	done
+fi
