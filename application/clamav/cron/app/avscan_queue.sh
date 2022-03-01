@@ -14,15 +14,15 @@ if [[ -z "${LOG_PATH}" ]]; then
 	exit 1
 fi
 
-## Wait to ensure that clamd is running, avoiding rare chance that cron runs this before clamd finished starting.
+# Ensure clamd service is up and socket exists, incase service has crashed or is still starting up
 for x in {1..10}; do
-	if [[ ! -e "/var/run/clamav/clamd.ctl" ]]; then
-		sleep 5s
+	if [[ ! -S "/var/run/clamav/clamd.ctl" ]]; then
+		 sleep 5s
 	else
-		break
+		 break
 	fi
 done
-if [[ ! -e "/var/run/clamav/clamd.ctl" ]]; then
+if [[ ! -S "/var/run/clamav/clamd.ctl" ]]; then
 	_log "[$$] Clamd service wasn't ready. No files were scanned on this attempt."
 	exit 0
 fi
@@ -34,6 +34,9 @@ COUNT=${#MANIFEST_LIST[@]}
 while [[ ${#MANIFEST_LIST[@]} -gt 0 ]]; do
 	# Process each manifest
 	for MANIFEST in ${MANIFEST_LIST[@]}; do
+		if [[ ! -S "/var/run/clamav/clamd.ctl" ]]; then
+			break 2
+		fi
 		scanQueue "$$" "${QUEUE_DIR}/${MANIFEST}"
 	done
 	# Refresh MANIFEST_LIST

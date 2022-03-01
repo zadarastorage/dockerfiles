@@ -140,6 +140,9 @@ function findFiles {
 function scanQueue {
 	PARENT_ID=$1
 	shift
+	if [[ ! -S "/var/run/clamav/clamd.ctl" ]]; then
+		return
+	fi
 	MANIFEST_FILE="${@}"
 	if [[ -e "${MANIFEST_FILE}" ]]; then
 		# Take claim of the manifest file to prevent another process from using it
@@ -149,8 +152,13 @@ function scanQueue {
 		COUNT=$(grep -cz '^' "${MANIFEST_FILE}.${HOST_ID}")
 		_log "[$PARENT_ID] Starting ${MANIFEST_FILE} - ${COUNT} entries with ${SCAN_THREADS:-1} threads"
 		env_parallel -0 -n 1 -P ${SCAN_THREADS:-1} -I {} avScan "$PARENT_ID" {} :::: "${MANIFEST_FILE}.${HOST_ID}"
-		rm "${MANIFEST_FILE}.${HOST_ID}"
-		_log "[$PARENT_ID] Ending ${MANIFEST_FILE}"
+		if [[ -S "/var/run/clamav/clamd.ctl" ]]; then
+			rm "${MANIFEST_FILE}.${HOST_ID}"
+			_log "[$PARENT_ID] Ending ${MANIFEST_FILE}"
+		else
+			mv "${MANIFEST_FILE}.${HOST_ID}" "${MANIFEST_FILE}" &> /dev/null
+			_log "[$PARENT_ID] Requeueing ${MANIFEST_FILE}. Clamd service crashed during this cycle."
+		fi
 	fi
 }
 
@@ -171,11 +179,12 @@ function avScan {
 		fi
 		TS=$(date -u --rfc-3339=ns)
 		RESULT=$(clamdscan "${CLAMSCAN_ARGS[@]}" | grep "^${TARGET_FILE}")
+		EXIT_STATUS=${PIPESTATUS[0]}
 		if [[ -z "${RESULT}" ]]; then
 			if [[ ! -e "${TARGET_FILE}" ]]; then
 				RESULT="${TARGET_FILE}: FILENOTFOUND ERROR"
 			else
-				RESULT="${TARGET_FILE}: UNKNOWN ERROR"
+				RESULT="${TARGET_FILE}: UNKNOWN/${EXIT_STATUS} ERROR"
 			fi
 		fi
 		echo "${RESULT}" | awk -v prefix="[${TS}][${HOST_ID}] " '{print prefix $0}' >> "${LOG_PATH}/scans/${DATE_DIR}/${DATE_FILE}.log"
