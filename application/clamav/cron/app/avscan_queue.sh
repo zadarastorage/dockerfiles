@@ -13,6 +13,10 @@ if [[ -z "${LOG_PATH}" ]]; then
 	_error "LOG_PATH was undefined, not sure where to store logs."
 	exit 1
 fi
+if [[ ! -d "${LOG_PATH}" ]]; then
+	_error "LOG_PATH[${LOG_PATH}] was not a directory, exiting."
+	exit 1
+fi
 
 # Ensure clamd service is up and socket exists, incase service has crashed or is still starting up
 for x in {1..10}; do
@@ -35,6 +39,7 @@ while [[ ${#MANIFEST_LIST[@]} -gt 0 ]]; do
 	# Process each manifest
 	for MANIFEST in ${MANIFEST_LIST[@]}; do
 		if [[ ! -S "/var/run/clamav/clamd.ctl" ]]; then
+			_log "[$$] Clamd service isn't ready. Stopping scan."
 			break 2
 		fi
 		scanQueue "$$" "${QUEUE_DIR}/${MANIFEST}"

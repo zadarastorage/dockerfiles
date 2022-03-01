@@ -1,2 +1,6 @@
 #!/usr/bin/execlineb -S0
+backtick DATE { date -u --rfc-3339=ns }
+importas date DATE
+
+foreground { echo "[clamd] ${date} !! Clamd service exited for some reason. Stopping container." }
 s6-svscanctl -t /var/run/s6/services  # exit all other services, kill the container

@@ -17,6 +17,7 @@ function _log {
 	(>&2 echo "$(date -u --rfc-3339=ns) ${0}: ${@}")
 }
 function _error {
+	# TODO: Decide if _error should do anything more elaborate with received message
 	_log "${@}"
 }
 
@@ -178,7 +179,7 @@ function avScan {
 			CLAMSCAN_ARGS+=( "--move=${QUAR_PATH}" )
 		fi
 		TS=$(date -u --rfc-3339=ns)
-		RESULT=$(clamdscan "${CLAMSCAN_ARGS[@]}" | grep "^${TARGET_FILE}")
+		RESULT=$(clamdscan "${CLAMSCAN_ARGS[@]}" | grep "^${TARGET_FILE}:")
 		EXIT_STATUS=${PIPESTATUS[0]}
 		if [[ -z "${RESULT}" ]]; then
 			if [[ ! -e "${TARGET_FILE}" ]]; then

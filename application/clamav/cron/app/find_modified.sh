@@ -13,6 +13,10 @@ if [[ -z "${LOG_PATH}" ]]; then
 	_error "LOG_PATH was undefined, not sure where to store logs."
 	exit 1
 fi
+if [[ ! -d "${LOG_PATH}" ]]; then
+        _error "LOG_PATH[${LOG_PATH}] was not a directory, exiting."
+        exit 1
+fi
 
 FIND_FOLDERS=( $(getMounts | grep -v -e "^${LOG_PATH}$" -e "^${QUAR_PATH:-}$") )
 if [[ ${#FIND_FOLDERS[@]} -eq 0 ]]; then
