@@ -38,6 +38,21 @@ function _lock {
 	fi
 }
 
+function clamdRunning {
+	# Simple check, clamd isn't running if either of these do not exist
+	if [[ ! -S "/var/run/clamav/clamd.ctl" || ! -e "/dev/shm/clamd.pid" ]]; then
+		return 1
+	fi
+	# Pidcheck
+	if [[ -e "/dev/shm/clamd.pid" ]]; then
+		EPID=$(< "${LOCK_FILE}")
+		if ! kill -0 ${EPID} &>/dev/null; then
+			return 1
+		fi
+	fi
+	return 0
+}
+
 # supportTicket "level" "title" "message"
 function supportTicket {
 	if [[ "${VPSA_ACCESSKEY}" != "" ]]; then
@@ -141,7 +156,7 @@ function findFiles {
 function scanQueue {
 	PARENT_ID=$1
 	shift
-	if [[ ! -S "/var/run/clamav/clamd.ctl" ]]; then
+	if ! clamdRunning; then
 		return
 	fi
 	MANIFEST_FILE="${@}"
@@ -153,12 +168,13 @@ function scanQueue {
 		COUNT=$(grep -cz '^' "${MANIFEST_FILE}.${HOST_ID}")
 		_log "[$PARENT_ID] Starting ${MANIFEST_FILE} - ${COUNT} entries with ${SCAN_THREADS:-1} threads"
 		env_parallel -0 -n 1 -P ${SCAN_THREADS:-1} -I {} avScan "$PARENT_ID" {} :::: "${MANIFEST_FILE}.${HOST_ID}"
-		if [[ -S "/var/run/clamav/clamd.ctl" ]]; then
+		EXIT=$?
+		if clamdRunning && [ ${EXIT} -eq 0 ]; then
 			rm "${MANIFEST_FILE}.${HOST_ID}"
 			_log "[$PARENT_ID] Ending ${MANIFEST_FILE}"
 		else
 			mv "${MANIFEST_FILE}.${HOST_ID}" "${MANIFEST_FILE}" &> /dev/null
-			_log "[$PARENT_ID] Requeueing ${MANIFEST_FILE}. Clamd service crashed during this cycle."
+			_log "[$PARENT_ID] Requeueing ${MANIFEST_FILE}. Clamd service stopped responding during this cycle. ${EXIT}"
 		fi
 	fi
 }
@@ -174,16 +190,19 @@ function avScan {
 		if [[ ! -d "${LOG_PATH}/scans/${DATE_DIR}" ]]; then
 			mkdir -p "${LOG_PATH}/scans/${DATE_DIR}"
 		fi
-		CLAMSCAN_ARGS=("${TARGET_FILE}" "--no-summary" "--fdpass")
+		CLAMSCAN_ARGS=("--no-summary" "--fdpass")
 		if [[ -n "${QUAR_PATH}" ]]; then
 			CLAMSCAN_ARGS+=( "--move=${QUAR_PATH}" )
 		fi
+		CLAMSCAN_ARGS+=("${TARGET_FILE}")
 		TS=$(date -u --rfc-3339=ns)
-		RESULT=$(clamdscan "${CLAMSCAN_ARGS[@]}" | grep "^${TARGET_FILE}:")
-		EXIT_STATUS=${PIPESTATUS[0]}
-		if [[ -z "${RESULT}" ]]; then
+		RESULT=$(clamdscan "${CLAMSCAN_ARGS[@]}")
+		EXIT_STATUS=$?
+		if [[ ${EXIT_STATUS} -ge 2 || -z "${RESULT}" ]]; then
 			if [[ ! -e "${TARGET_FILE}" ]]; then
 				RESULT="${TARGET_FILE}: FILENOTFOUND ERROR"
+			elif ! clamdRunning; then
+				RESULT="${TARGET_FILE}: CLAMDSVCSTOPPED ERROR"
 			else
 				RESULT="${TARGET_FILE}: UNKNOWN/${EXIT_STATUS} ERROR"
 			fi
@@ -198,7 +217,11 @@ function avScan {
 		elif [[ "${RESULT:$length_error:${#ISERROR}}" == "${ISERROR}" ]]; then
 			echo "${RESULT}" | awk -v prefix="[${TS}][${HOST_ID}] " '{print prefix $0}' >> "${LOG_PATH}/scans/${DATE_DIR}/${DATE_FILE}.error"
 		fi
-
+		if [[ ${EXIT_STATUS} -ge 2 ]]; then
+			return 1
+		else
+			return 0
+		fi
 	else
 		_log "[$PARENT_ID][${TARGET_FILE}] File not found. It's probably been moved or deleted."
 	fi
@@ -216,3 +239,4 @@ function parseSplit {
 
         echo ${OUTPUT}
 }
+

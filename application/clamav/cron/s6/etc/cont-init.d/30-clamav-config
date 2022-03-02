@@ -12,10 +12,8 @@ if [[ -z "${CLAM_MODE}" || "${CLAM_MODE}" == "av" || "${CLAM_MODE}" == "both" ]]
 	chown clamav:clamav /var/run/clamav
 
 	# Set some defaults, this is primarily incase there's no config file present in LOG_PATH/conf
-#	sed -i "s@LogFile .*@LogFile ${LOG_PATH}/logs-service/clamd.${HOST_ID}.log@" "/etc/clamav/clamd.conf"
 	sed -i "s@^LogFile @#LogFile @g" "/etc/clamav/clamd.conf"
 	
-	#sed -i "s@UpdateLogFile .*@UpdateLogFile ${LOG_PATH}/logs-service/freshclam.${HOST_ID}.log@" "/etc/clamav/freshclam.conf"
 	sed -i "s@^UpdateLogFile @#UpdateLogFile @g" "/etc/clamav/freshclam.conf"
 	sed -i 's/ReceiveTimeout.*/ReceiveTimeout 60/' "/etc/clamav/freshclam.conf"
 	sed -i 's/ConnectTimeout.*/ConnectTimeout 60/' "/etc/clamav/freshclam.conf"
@@ -38,16 +36,17 @@ if [[ -z "${CLAM_MODE}" || "${CLAM_MODE}" == "av" || "${CLAM_MODE}" == "both" ]]
 	done
 
 	# Override clamd and freshclam log paths, inject proxy config if present
-#	sed -i "s@LogFile .*@LogFile ${LOG_PATH}/logs-service/clamd.${HOST_ID}.log@" "/etc/clamav/clamd.conf"
 	sed -i "s@^LogFile @#LogFile @g" "/etc/clamav/clamd.conf"
 	grep -q "^ConcurrentDatabaseReload .*" "/etc/clamav/clamd.conf" && sed -i "s/^ConcurrentDatabaseReload.*/ConcurrentDatabaseReload no/" "/etc/clamav/clamd.conf" || echo "ConcurrentDatabaseReload no" >> "/etc/clamav/clamd.conf"
 
-#	sed -i "s@UpdateLogFile .*@UpdateLogFile ${LOG_PATH}/logs-service/freshclam.${HOST_ID}.log@" "/etc/clamav/freshclam.conf"
 	sed -i "s@^UpdateLogFile @#UpdateLogFile @g" "/etc/clamav/freshclam.conf"
 	if [[ -n "${PROXY_SERVER}" && -n "${PROXY_PORT}" ]]; then
 		grep -q "^HTTPProxyServer .*" "/etc/clamav/freshclam.conf" && sed -i "s/^HTTPProxyServer.*/HTTPProxyServer ${PROXY_SERVER}/" "/etc/clamav/freshclam.conf" || echo "HTTPProxyServer ${PROXY_SERVER}" >> "/etc/clamav/freshclam.conf"
 		grep -q "^HTTPProxyPort .*" "/etc/clamav/freshclam.conf" && sed -i "s/^HTTPProxyPort.*/HTTPProxyPort ${PROXY_PORT}/" "/etc/clamav/freshclam.conf" || echo "HTTPProxyPort ${PROXY_PORT}" >> "/etc/clamav/freshclam.conf"
 	fi
+
+	# Add PidFile to the config
+	grep -q "^PidFile .*" "/etc/clamav/clamd.conf" && sed -i "s@^PidFile .*@PidFile /dev/shm/clamd.pid@" "/etc/clamav/clamd.conf" || echo "PidFile /dev/shm/clamd.pid" >> "/etc/clamav/clamd.conf"
 
 	# Make sure CLAMAV definitions belong to the user defined in clamd.conf
 	USERNAME=$(awk '/^User /{print $NF}' "/etc/clamav/clamd.conf")

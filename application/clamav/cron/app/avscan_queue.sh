@@ -20,13 +20,13 @@ fi
 
 # Ensure clamd service is up and socket exists, incase service has crashed or is still starting up
 for x in {1..10}; do
-	if [[ ! -S "/var/run/clamav/clamd.ctl" ]]; then
+	if ! clamdRunning; then
 		 sleep 5s
 	else
 		 break
 	fi
 done
-if [[ ! -S "/var/run/clamav/clamd.ctl" ]]; then
+if ! clamdRunning; then
 	_log "[$$] Clamd service wasn't ready. No files were scanned on this attempt."
 	exit 0
 fi
@@ -38,7 +38,7 @@ COUNT=${#MANIFEST_LIST[@]}
 while [[ ${#MANIFEST_LIST[@]} -gt 0 ]]; do
 	# Process each manifest
 	for MANIFEST in ${MANIFEST_LIST[@]}; do
-		if [[ ! -S "/var/run/clamav/clamd.ctl" ]]; then
+		if ! clamdRunning; then
 			_log "[$$] Clamd service isn't ready. Stopping scan."
 			break 2
 		fi
