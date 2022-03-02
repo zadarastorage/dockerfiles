@@ -157,13 +157,13 @@ The script will automatically inject:
 * `'-newermt' '2022-03-01 22:24:01+00:00'` - Modified time newer than the start of the last execution
 
 Examples:
-| FIND_EXTRA | Resulting "full" find command (Excluding newermt) |
-|---|---|
-| `-executable` | `find '/export/data1' '-type' 'f' '-executable' '-print0' ` |
-| `\( -size +100M \)` | `find '/export/data1' '-type' 'f' '(' '-size' '+100M' ')' '-print0' ` |
-| `! \( -name *.ignore \)` | `find '/export/data1' '-type' 'f' '!' '(' '-name' '*.ignore' ')' '-print0' ` |
-| `! \( -name *.ignore -o -name *.ignore2 -o -name "a b" \)` | `find '/export/data1' '-type' 'f' '!' '(' '-name' '*.ignore' '-o' '-name' '*.ignore2' '-o' '-name' 'a b' ')' '-print0' ` |
-| `! \( -name *.ignore -o -name *.DS_Store -o -name "thumbs.db" \)` |  `find '/export/data1' '-type' 'f' '!' '(' '-name' '*.ignore' '-o' '-name' '*.DS_Store' '-o' '-name' 'thumbs.db' ')' '-print0' ` |
+| FIND_EXTRA | Resulting "full" find command (Excluding newermt) | Outcome |
+|---|---|---|
+| `-executable` | `find '/export/data1' '-type' 'f' '-executable' '-print0' ` | Files with their executable bit set |
+| `\( -size +100M \)` | `find '/export/data1' '-type' 'f' '(' '-size' '+100M' ')' '-print0' ` | Files greater than 100M |
+| `! \( -name *.ignore \)` | `find '/export/data1' '-type' 'f' '!' '(' '-name' '*.ignore' ')' '-print0' ` | Ignore files with the extension .ignore|
+| `! \( -name *.ignore -o -name *.ignore2 -o -name "a b" \)` | `find '/export/data1' '-type' 'f' '!' '(' '-name' '*.ignore' '-o' '-name' '*.ignore2' '-o' '-name' 'a b' ')' '-print0' ` | Ignore files with the extensions .ignore, .ignore2 or named 'a b' |
+| `! \( -name *.ignore -o -name .DS_Store -o -name "thumbs.db" \)` |  `find '/export/data1' '-type' 'f' '!' '(' '-name' '*.ignore' '-o' '-name' '.DS_Store' '-o' '-name' 'thumbs.db' ')' '-print0' ` | Ignore files with the extension .ignore, or named .DS_Store or thumbs.db |
 
 ## Design notes
 ### LOG_PATH folder structure
