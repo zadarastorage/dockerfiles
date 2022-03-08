@@ -164,7 +164,9 @@ Examples:
 | `! \( -name *.ignore \)` | `find '/export/data1' '-type' 'f' '!' '(' '-name' '*.ignore' ')' '-print0' ` | Ignore files with the extension .ignore|
 | `! \( -name *.ignore -o -name *.ignore2 -o -name "a b" \)` | `find '/export/data1' '-type' 'f' '!' '(' '-name' '*.ignore' '-o' '-name' '*.ignore2' '-o' '-name' 'a b' ')' '-print0' ` | Ignore files with the extensions .ignore, .ignore2 or named 'a b' |
 | `! \( -name *.ignore -o -name .DS_Store -o -name "thumbs.db" \)` |  `find '/export/data1' '-type' 'f' '!' '(' '-name' '*.ignore' '-o' '-name' '.DS_Store' '-o' '-name' 'thumbs.db' ')' '-print0' ` | Ignore files with the extension .ignore, or named .DS_Store or thumbs.db |
+| `! \( -path */.git/* -o -path */node_modules/* -o -path "*/.idea/*" \)` |  `find '/export/data1' '-type' 'f' '!' '(' '-path' '*/.git/*' '-o' '-path' '*/node_modules/*' '-o' '-path' '*/.idea/*' ')' '-print0' ` | Ignore all files inside any .git, node_modules or .idea folders at any depth |
 
+  
 ## Design notes
 ### LOG_PATH folder structure
 | Folder | Contents | Purpose |
