@@ -2,7 +2,9 @@
    * [Quick Reference](#quick-reference)
       * [Container design/behavior](#container-designbehavior)
       * [Environment Variables](#environment-variables)
-   * [Use Cases](#use-cases)
+      * [Memory Requirements](#memory-requirements)
+      * [Internet Connectivity](#internet-connectivity)
+   * [Deployment Cases](#deployment-cases)
       * [Basic - All-in-one Container](#basic---all-in-one-container)
       * [Advanced uses](#advanced-uses)
          * [Two containers directly on the VPSA](#two-containers-directly-on-the-vpsa)
@@ -59,7 +61,30 @@ Both scripts are configured to run once per hour at a randomized minute offset.
 |||||
 | SSH_SERVICE | optional | `disabled` or `enabled` | Default: `disabled`. An SSHd service is available for debugging purposes. Default credentials are **root**/**zadara** |
 
-## Use Cases
+### Memory Requirements
+As of 2022-03, clamd appears to require roughly 1.2G of RAM to keep the virus definitions loaded.
+Freshclam will also require roughly the similar amount of memory when performing a definition update as it validates the virus definition database.
+These memory capacities are expected to continue to grow over the coming years, and should be kept in mind when configured a VPSA.
+This is also disregarding memory capacity necessary to scan user data.
+
+With "default" features enabled(auto-updating), this container currently requires a minimum of ~2.4G of active memory. This makes the smallest compatible VPSA App Engine the "08", as it provides 4G active and 4G standby.  
+Disabling the auto-updating functionality and updating the definitions out-of-band manually, lowers the requirement to ~1.2G of active memory. This makes the smallest compatible VPSA App Engine the "06", as it provides 2G active and 2G standby.
+
+### Internet Connectivity
+A VPSA permits Containers to be launched in one of two contexs, "Frontend"(default) or "Public IP". 
+* Frontend
+  * Container ports (if configured) are explicitly listening on the Frontend IP address, same as iSCSI/NFS/SMB
+  * Container's outbound connectivity is sent through the frontend network, using the frontend gateway to attempt to access the internet
+  * Not all Zadara regions or customer configurations have gateways that will provide general internet connectivity, for example AWS Direct Connect customers can only reach AWS services
+  * A proxy may be required if the gateway does not provide direct internet connectivity
+* Public IP
+  * Container ports (if configured) are explicitly listening on the Public IP address
+  * Container's outbound connectivity is sent through the Public IP network, using a gateway provided by an on-site firewall(May be Customer, Partner or Zadara managed)
+  * VPSA Public IP configurations are primarily used for replication services between multiple VPSAs and/or Object Storage, and is generally assumed to have full internet connectivity
+  * VPSA Public IP does NOT offer iSCSI/NFS/SMB data services
+  * Not all Zadara regions have Public IP functionality enabled/configured, this mostly applies to on-prem regions
+
+## Deployment Cases
 ### Basic - All-in-one Container
 This configuration will scan data1 and data2 volumes for changes in the previous hour, and will generate a support ticket once-per-day of any detected infections IF any infections are detected.  
 Freshclam will use the VPSAs Frontend interface to try to update it's definitions twice a day, this may not work in some environments per network security policies.
