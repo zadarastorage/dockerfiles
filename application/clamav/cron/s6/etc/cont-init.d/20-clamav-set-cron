@@ -71,12 +71,8 @@ if [[ -z "${CLAM_MODE}" || "${CLAM_MODE}" == "av" || "${CLAM_MODE}" == "both" ]]
 	if [[ -e /etc/services.d/clamd/down ]]; then
 		rm /etc/services.d/clamd/down
 	fi
-	if [[ -e /etc/services.d/clamd/log/down ]]; then
-		rm /etc/services.d/clamd/log/down
-	fi
 else
 	touch /etc/services.d/clamd/down
-	touch /etc/services.d/clamd/log/down
 	for x in '/run_av.sh' '/run_freshclam.sh'; do
 		if [[ -e "${x}" ]]; then
 			rm "${x}"
