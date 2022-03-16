@@ -110,7 +110,7 @@ function findFiles {
 		LAST_START=$(echo "${LAST_LINE}" | cut -d',' -f3)
 		LAST_END=$(echo "${LAST_LINE}" | cut -d',' -f4)
 		if [[ -n "${LAST_START}" && -n "${LAST_END}" && "${LAST_START}" != "0" ]]; then
-			FIND_ARGS+=( "-newermt" "$(date -u --date=@${LAST_START} --rfc-3339=seconds)" )
+			FIND_ARGS+=( "(" "-newerct" "$(date -u --date=@${LAST_START} --rfc-3339=seconds)" "-o" "-newermt" "$(date -u --date=@${LAST_START} --rfc-3339=seconds)" ")" )
 		fi
 	else
 		echo "volume,volume_name_md5,start_unixtime,end_unixtime,manifests_generated,configured_manifest_limit" > "${STATS_DIR}/${FIND_HASH}-find.csv"

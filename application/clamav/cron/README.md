@@ -154,7 +154,7 @@ You can locate the "literal" `find` command being executed with in the ${LOG_PAT
 
 The script will automatically inject:
 * `-'type' 'f'` - Search for files
-* `'-newermt' '2022-03-01 22:24:01+00:00'` - Modified time newer than the start of the last execution
+* `'-newermt' '2022-03-01 22:24:01+00:00' '-o' '-newerct' '2022-03-01 22:24:01+00:00'` - Modified times newer than the start of the last execution
 
 Examples:
 | FIND_EXTRA | Resulting "full" find command (Excluding newermt) | Outcome |
