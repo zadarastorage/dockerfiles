@@ -240,3 +240,17 @@ function parseSplit {
         echo ${OUTPUT}
 }
 
+function requeueOrphanManifests {
+	PARENT_ID=$1
+	shift
+	COUNT=0
+	MANIFEST_LIST=( $(find "${QUEUE_DIR}/" -mindepth 1 -maxdepth 1 -type f -iname '*.manifest.*' -printf '%P\n' 2>/dev/null) )
+	for MANIFEST in ${MANIFEST_LIST[@]}; do
+		TARGET_HOST=${MANIFEST##*.}
+		if [[ ! -e "${LOG_PATH}/hb/${TARGET_HOST}" || $(cat "${LOG_PATH}/hb/${TARGET_HOST}") < $(date -d "-11 minutes" +%s) ]]; then
+			mv "${QUEUE_DIR}/${MANIFEST}" "${QUEUE_DIR}/${MANIFEST%.*}"
+			COUNT=$(( ${COUNT} + 1 ))
+		fi
+	done
+	_log "[${PARENT_ID}] ${COUNT} orphaned manifests were re-queued"
+}

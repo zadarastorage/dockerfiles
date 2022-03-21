@@ -1,0 +1,12 @@
+#!/usr/bin/with-contenv bash
+CRON_FILE="/etc/cron.d/zad_hb"
+HOST_ID=$(hostname)
+HB_FOLDER="${LOG_PATH}/hb"
+
+if [[ ! -d "${HB_FOLDER}" ]]; then
+	mkdir -p "${HB_FOLDER}"
+fi
+
+/usr/bin/date +%s > "${HB_FOLDER}/${HOST_ID}"
+
+echo "*/5 * * * * root /usr/bin/date +\%s > ${HB_FOLDER}/${HOST_ID}" > "${CRON_FILE}"

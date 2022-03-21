@@ -1,6 +1,12 @@
 #!/usr/bin/execlineb -S0
+s6-envdir -fn -- /var/run/s6/container_environment
+backtick HOST_ID { hostname }
 backtick DATE { date -u --rfc-3339=ns }
+
+importas LOG_PATH LOG_PATH
+importas HOST_ID HOST_ID
 importas date DATE
 
 foreground { echo "[clamd] ${date} !! Clamd service exited for some reason. Stopping container." }
+foreground { rm -f "${LOG_PATH}/hb/${HOST_ID}" }
 s6-svscanctl -t /var/run/s6/services  # exit all other services, kill the container

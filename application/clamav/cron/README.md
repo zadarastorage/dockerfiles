@@ -202,6 +202,7 @@ Examples:
 | queue | `*.manifest` | `\0`(`null`) delimited text files containing lists of files to be scanned. Is processed by avscan_queue scripts and deleted on completion. |
 | scans | `YYYY\MM\YYYY-MM-DD.{log,infected,error}` | Logfile for each day containing the timestampl and scan results from `clamdscan`. Used by the daily report script to determine if any infections were detected in a 24 hour period. |
 | stats | `*-find.csv`<br>`av_scan.YYY-MM.csv` | CSV files for each data volume being scanned by find_modified tracking execution timestamps, this is used to determine each scan's cutoff time.<br>av_scan files contain the quantity numbers from the daily reports |
+| hb | `<hostname>` | heartbeat files from all containers, used to track which containers are no longer active and re-queue their manifests. All containers will update the timestamp in these files every 5 minutes. Any timestamp >11 minutes will be considered offline. |
 
 ### Preparing a proxy for updating virus definitions
 Some private environments have their VPSAs configured with a functioning outbound internet gateway, not all do. So a backup option is to provide a squid proxy on a supplemental VM within the user network, which can be used by `freshclam` to update it's local antivirus definitions.  

@@ -32,6 +32,16 @@ if ! clamdRunning; then
 fi
 
 #### Processing logic
+_log "[$$] Re-queuing incomplete manifests starting"
+COUNT=$(( ${COUNT} + 1 ))
+INCOMPLETE_LIST=( $(find "${QUEUE_DIR}/" -mindepth 1 -maxdepth 1 -type f -iname "*.manifest.${HOST_ID}" -printf '%P\n' 2>/dev/null) )
+for MANIFEST in ${INCOMPLETE_LIST[@]}; do
+	mv "${QUEUE_DIR}/${MANIFEST}" "${QUEUE_DIR}/${MANIFEST%.*}"
+	COUNT=$(( ${COUNT} + 1 ))
+done
+_log "[$$] ${COUNT} incomplete manifests were re-queued"
+_log "[$$] Re-queuing incomplete manifests ended"
+
 _log "[$$] AV Scan of manifest entries starting"
 MANIFEST_LIST=( $(find "${QUEUE_DIR}/" -mindepth 1 -maxdepth 1 -type f -mmin +2 -iname '*.manifest' -printf '%T@ %P\n' | sort -n 2>/dev/null | head -n 10 | cut -d ' ' -f2-) )
 COUNT=${#MANIFEST_LIST[@]}

@@ -25,6 +25,12 @@ if [[ ${#FIND_FOLDERS[@]} -eq 0 ]]; then
 fi
 
 #### Processing logic
+## Re-queue incomplete manifests
+_log "[$$] Re-queue orphan manifests starting"
+requeueOrphanManifests "$$"
+_log "[$$] Re-queue orphan manifests ended"
+
+## Generate new manifest
 _log "[$$] Search for new or modified files starting"
 getMounts | grep -v -e "^${LOG_PATH}$" -e "^${QUAR_PATH:-}$" | env_parallel -n 1 -P ${FIND_THREADS:-1} -I {} findFiles "$$" {}
 _log "[$$] Search for new or modified files ended"
