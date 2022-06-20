@@ -10,7 +10,7 @@ CURL_CONTENT_TYPE="application/json"
 CURL_ARGS=("--connect-timeout" "10" "-L" "-s" "-k" "-A" "vpsa_curl")
 
 function _log {
-	(>&2 echo "$(date -u +'%Y-%m-%d %H:%M:%S') ${0}: ${@}")
+	(>&2 echo "$(date --rfc-3339=ns) ${0}: ${@}")
 }
 
 while [ -n "${1}" ]; do

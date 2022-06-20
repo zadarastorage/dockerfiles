@@ -3,6 +3,7 @@ source /usr/bin/env_parallel.bash
 
 LOCK_DIR="/dev/shm"
 HOST_ID=$(hostname)
+TZ=${TZ:-UTC}
 
 QUEUE_DIR="${LOG_PATH}/queue"
 STATS_DIR="${LOG_PATH}/stats"
@@ -14,7 +15,7 @@ if [[ -d "${LOG_PATH}" && ! -d "${STATS_DIR}" ]]; then
 fi
 
 function _log {
-	(>&2 echo "$(date -u --rfc-3339=ns) ${0}: ${@}")
+	(>&2 echo "$(date --rfc-3339=ns) ${0}: ${@}")
 }
 function _error {
 	# TODO: Decide if _error should do anything more elaborate with received message
@@ -97,7 +98,7 @@ function findFiles {
 		return 0
 	fi
 	FIND_HASH=$(echo "${FIND_TARGET}" | md5sum | awk '{print $1}')
-	FIND_START=$(date -u +%s)
+	FIND_START=$(date +%s)
 	FIND_PREFIX="${FIND_START}_${FIND_HASH}"
 	FIND_ARGS=( 
 		"${FIND_TARGET}"
@@ -110,14 +111,14 @@ function findFiles {
 		LAST_START=$(echo "${LAST_LINE}" | cut -d',' -f3)
 		LAST_END=$(echo "${LAST_LINE}" | cut -d',' -f4)
 		if [[ -n "${LAST_START}" && -n "${LAST_END}" && "${LAST_START}" != "0" ]]; then
-			FIND_ARGS+=( "(" "-newerct" "$(date -u --date=@${LAST_START} --rfc-3339=seconds)" "-o" "-newermt" "$(date -u --date=@${LAST_START} --rfc-3339=seconds)" ")" )
+			FIND_ARGS+=( "(" "-newerct" "$(date --date=@${LAST_START} --rfc-3339=seconds)" "-o" "-newermt" "$(date --date=@${LAST_START} --rfc-3339=seconds)" ")" )
 		fi
 	else
 		echo "volume,volume_name_md5,start_unixtime,end_unixtime,manifests_generated,configured_manifest_limit" > "${STATS_DIR}/${FIND_HASH}-find.csv"
 	fi
 	# 5 minute cooldown incase someone accidentally configures this to run every minute
 	if [[ -n "${LAST_END}" && $(date +%s) -le $(date +%s -d "@$(( $(date +%s -d@${LAST_END}) + (60 * 5) ))") ]]; then
-		_log "[${PARENT_ID}][${FIND_TARGET}] Last run was [$(date -u -d@${LAST_END} --rfc-3339=ns)] Hardcoded rate limit to 5 minutes, to reduce IO load of some environments."
+		_log "[${PARENT_ID}][${FIND_TARGET}] Last run was [$(date -d@${LAST_END} --rfc-3339=ns)] Hardcoded rate limit to 5 minutes, to reduce IO load of some environments."
 		return 0
 	fi
 	# Parse and pass extra find critiera from FIND_FILTER env var
@@ -185,8 +186,8 @@ function avScan {
 	TARGET_FILE="${@}"
 	## Scan file
 	if [[ -e "${TARGET_FILE}" ]]; then # File still exists
-		DATE_DIR=$(date -u +%Y/%m)
-		DATE_FILE=$(date -u +%Y-%m-%d)
+		DATE_DIR=$(date +%Y/%m)
+		DATE_FILE=$(date +%Y-%m-%d)
 		if [[ ! -d "${LOG_PATH}/scans/${DATE_DIR}" ]]; then
 			mkdir -p "${LOG_PATH}/scans/${DATE_DIR}"
 		fi
@@ -195,7 +196,7 @@ function avScan {
 			CLAMSCAN_ARGS+=( "--move=${QUAR_PATH}" )
 		fi
 		CLAMSCAN_ARGS+=("${TARGET_FILE}")
-		TS=$(date -u --rfc-3339=ns)
+		TS=$(date --rfc-3339=ns)
 		RESULT=$(clamdscan "${CLAMSCAN_ARGS[@]}")
 		EXIT_STATUS=$?
 		if [[ ${EXIT_STATUS} -ge 2 || -z "${RESULT}" ]]; then

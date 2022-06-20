@@ -14,9 +14,9 @@ if [[ -z "${LOG_PATH}" ]]; then
 	exit 1
 fi
 
-REPORT_DATE=${1:-$(date -u -d "-1 day")}
-DATE_DIR=$(date -u +%Y/%m -d "${REPORT_DATE}")
-DATE_FILE=$(date -u +%Y-%m-%d -d "${REPORT_DATE}")
+REPORT_DATE=${1:-$(date -d "-1 day")}
+DATE_DIR=$(date +%Y/%m -d "${REPORT_DATE}")
+DATE_FILE=$(date +%Y-%m-%d -d "${REPORT_DATE}")
 
 ## Identify scanned and infected
 SCANNED=0
@@ -58,7 +58,7 @@ if [[ -z "${VPSA_ACCESSKEY}" ]]; then
 fi
 
 REPORT=(
-	"Log period: ${DATE_FILE} 00:00:00 UTC to ${DATE_FILE} 23:59:59 UTC"
+	"Log period: ${DATE_FILE} 00:00:00 ${TZ} to ${DATE_FILE} 23:59:59 ${TZ}"
 	""
 	"Scan log file: ${LOG_PATH}/scans/${DATE_DIR}/${DATE_FILE}.log"
 	"Files scanned: ${SCANNED}"

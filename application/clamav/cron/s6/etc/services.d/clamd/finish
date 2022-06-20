@@ -1,7 +1,7 @@
 #!/usr/bin/execlineb -S0
 s6-envdir -fn -- /var/run/s6/container_environment
 backtick HOST_ID { hostname }
-backtick DATE { date -u --rfc-3339=ns }
+backtick DATE { date --rfc-3339=ns }
 
 importas LOG_PATH LOG_PATH
 importas HOST_ID HOST_ID

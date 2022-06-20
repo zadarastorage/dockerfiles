@@ -60,6 +60,8 @@ Both scripts are configured to run once per hour at a randomized minute offset.
 | PROXY_PORT | optional | `3128` | Port of an available squid proxy for `freshclam` to update local virus definitions. |
 |||||
 | SSH_SERVICE | optional | `disabled` or `enabled` | Default: `disabled`. An SSHd service is available for debugging purposes. Default credentials are **root**/**zadara** |
+|||||
+| TZ | optional | `UTC`<br />`America/Los_Angeles` | Default: `UTC`. Sets container TZ for log output and logfile scoping. May cause oddities in regions honoring DST during annual timechanges, default UTC is recommended. Unfortunately ClamAV service logs do not appear to include the TZ in their output. |
 
 ### Memory Requirements
 As of 2022-03, clamd appears to require roughly 1.2G of RAM to keep the virus definitions loaded.

@@ -45,7 +45,8 @@ COPY s6-cron /
 # Build clamav
 FROM s6-cron
 
-ENV SSH_SERVICE="disabled"
+ENV SSH_SERVICE="disabled" \
+    TZ="UTC"
 
 RUN \
     apt-get update && \

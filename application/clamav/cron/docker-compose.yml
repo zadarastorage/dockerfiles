@@ -21,9 +21,10 @@ services:
       SSH_SERVICE: "enabled"
 #      FIND_EXTRA: "-not -name *.ignore"
       FIND_EXTRA: '! \( -name *.ignore -o -name *.ignore2 -o -name "a b" \)'
-      FIND_CRON: "10 * * * *"
+      FIND_CRON: "*/10 * * * *"
       VPSA_ACCESSKEY: "NV4JE12C9FF9H5I5T4S9-3857"
       VPSA_IP: "172.29.224.100"
+      TZ: 'America/Los_Angeles'
   av1:
     build:
       context: .
@@ -43,7 +44,8 @@ services:
       SSH_SERVICE: "enabled"
       PROXY_SERVER: "127.0.0.1"
       PROXY_PORT: "3214"
-      SCAN_CRON: "20 * * * *"
+      SCAN_CRON: "*/11 * * * *"
+      TZ: 'America/Los_Angeles'
   av2:
     build:
       context: .
@@ -62,4 +64,5 @@ services:
       CLAM_MODE: "av"
       SSH_SERVICE: "enabled"
       SCAN_THREADS: "2"
-      SCAN_CRON: "30 * * * *"
+      SCAN_CRON: "*/9 * * * *"
+      TZ: 'America/Los_Angeles'
