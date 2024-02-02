@@ -14,7 +14,12 @@ pids=`jobs -p`
 
 exitcode=0
 
-function terminate() {
+function _term() {
+    echo "Caught SIGTERM signal!"
+    kill -TERM $pids 2>/dev/null
+}
+
+function _chld() {
     trap "" CHLD
 
     for pid in $pids; do
@@ -27,7 +32,8 @@ function terminate() {
     kill $pids 2>/dev/null
 }
 
-trap terminate CHLD
+trap _term TERM
+trap _chld CHLD
 wait
 
 exit $exitcode
